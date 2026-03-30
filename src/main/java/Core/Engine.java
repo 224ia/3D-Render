@@ -28,19 +28,20 @@ public final class Engine {
     public final Projection projection;
 
     private int fov;
+    private final int BASE_FOV = 100;
     private final int MIN_FOV = 30;
     private final int MAX_FOV = 150;
 
     private final UITextLabel fovText;
     private final UITextLabel fpsText;
 
-    public Engine(Renderer renderer, int width, int height, int fov) {
+    public Engine(Renderer renderer, int width, int height) {
         this.renderer = renderer;
 
         this.WIDTH = width;
         this.HEIGHT = height;
 
-        this.fov = fov;
+        this.fov = BASE_FOV;
 
         projection = new Projection(width, height, (float) width / height, fov);
 

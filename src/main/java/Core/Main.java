@@ -18,7 +18,7 @@ public class Main {
                 new Color(1f, 1f, 1f, 0.5f), "Юхууу", new Color(0f, 0f, 0f, 1f), 50);
         renderer.addUIElement(text);
 
-        Engine engine = new Engine(renderer, WIDTH, HEIGHT, 110);
+        Engine engine = new Engine(renderer, WIDTH, HEIGHT);
         engine.setScene(10f);
         Scene scene = engine.getScene();
         // Test Objects
