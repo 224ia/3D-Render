@@ -1,0 +1,144 @@
+package Software;
+
+import Util.*;
+import org.joml.Vector4f;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
+
+public final class SoftwareRenderer extends Renderer {
+    private final Frame frame;
+    private final BufferedImage image;
+    private final Graphics2D g2;
+
+    private final float[] pixels;
+
+    private SoftwareRenderer(Frame frame) {
+        super(new SoftwareInput(frame.getFrame()),
+                new SoftwareMouse(frame.getFrame()));
+        this.frame = frame;
+        this.image = new BufferedImage(frame.WIDTH, frame.HEIGHT, BufferedImage.TYPE_INT_RGB);
+        this.g2 = image.createGraphics();
+        this.ui = new SoftwareUI(g2);
+
+        this.pixels = new float[frame.WIDTH * frame.HEIGHT];
+        Arrays.fill(pixels, Float.MAX_VALUE);
+    }
+
+    public SoftwareRenderer(int width, int height) {
+        this(createFrame(width, height));
+    }
+
+    private static Frame createFrame(int width, int height) {
+        return new Frame(width, height);
+    }
+
+    @Override
+    public void render(List<RenderPolygon> renderPolygons, Projection projection) {
+        g2.setColor(new Color(147, 147, 147, 255));
+        g2.fillRect(0, 0, frame.WIDTH, frame.HEIGHT);
+
+        Arrays.fill(pixels, Float.MAX_VALUE);
+
+        for (RenderPolygon polygon : renderPolygons) {
+            projectVertices(g2, polygon.v0, polygon.v1, polygon.v2, polygon.normal, polygon.color, polygon.texture, projection);
+        }
+
+        if (ui != null) drawUI();
+        frame.updateImage(image);
+    }
+
+    public void projectVertices(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, Vector4f normal, Color color, BufferedImage texture, Projection projection) {
+        if (v0.pos.z <= 0 || v1.pos.z <= 0 || v2.pos.z <= 0) return;
+
+        v0.pos = projection.project(v0.pos);
+        v1.pos = projection.project(v1.pos);
+        v2.pos = projection.project(v2.pos);
+
+        Vector4f lightDir = new Vector4f(1, 1, 1, 0).normalize();
+        float dot = normal.dot(lightDir.negate()) * 0.5f + 0.5f;
+
+        drawTriangle(g2, v0, v1, v2, texture, color, dot);
+    }
+
+    private void drawTriangle(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, BufferedImage texture, Color color, float dot) {
+        int minX = (int) Math.min(v0.pos.x, Math.min(v1.pos.x, v2.pos.x));
+        int maxX = (int) Math.max(v0.pos.x, Math.max(v1.pos.x, v2.pos.x));
+        int minY = (int) Math.min(v0.pos.y, Math.min(v1.pos.y, v2.pos.y));
+        int maxY = (int) Math.max(v0.pos.y, Math.max(v1.pos.y, v2.pos.y));
+
+        minX = Math.max(0, minX);
+        maxX = Math.min(frame.WIDTH - 1, maxX);
+        minY = Math.max(0, minY);
+        maxY = Math.min(frame.HEIGHT - 1, maxY);
+
+        if (v0.uv != null && v1.uv != null && v2.uv != null && texture != null) {
+            v0.uv.mul(v0.invZ);
+            v1.uv.mul(v1.invZ);
+            v2.uv.mul(v2.invZ);
+        }
+
+        float area = edgeFunction(v0.pos, v1.pos, v2.pos);
+        if (area == 0) return;
+
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+                float w0 = edgeFunction(v1.pos, v2.pos, x, y);
+                float w1 = edgeFunction(v2.pos, v0.pos, x, y);
+                float w2 = edgeFunction(v0.pos, v1.pos, x, y);
+                if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                    w0 /= area; w1 /= area; w2 /= area;
+
+                    float z = 1f / (w0 * v0.invZ + w1 * v1.invZ + w2 * v2.invZ);
+
+                    // Z-Buffer
+                    if (pixels[y * frame.WIDTH + x] < z) continue;
+                    pixels[y * frame.WIDTH + x] = z;
+
+                    // Object color [0, 1]
+                    float div = 1 / 255f;
+                    float r = color.getRed() * div;
+                    float g = color.getGreen() * div;
+                    float b = color.getBlue() * div;
+
+                    if (v0.uv != null && v1.uv != null && v2.uv != null && texture != null) {
+                        float u = (w0 * v0.uv.x + w1 * v1.uv.x + w2 * v2.uv.x) * z;
+                        float v = (w0 * v0.uv.y + w1 * v1.uv.y + w2 * v2.uv.y) * z;
+
+                        int texX = (int)(u * texture.getWidth());
+                        int texY = (int)(v * texture.getHeight());
+
+                        texX = Math.min(texX, texture.getWidth() - 1);
+                        texY = Math.min(texY, texture.getHeight() - 1);
+
+                        Color texColor = new Color(texture.getRGB(texX, texY));
+
+                        int rt = (int)(texColor.getRed() * dot * r);
+                        int gt = (int)(texColor.getGreen() * dot * g);
+                        int bt = (int)(texColor.getBlue() * dot * b);
+
+                        g2.setColor(new Color(rt, gt, bt));
+                    } else {
+                        g2.setColor(new Color(r, g, b));
+                    }
+                    g2.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+    }
+
+    private float edgeFunction(Vector4f v0, Vector4f v1, Vector4f v2) {
+        return edgeFunction(v0, v1, v2.x, v2.y);
+    }
+
+    private float edgeFunction(Vector4f v0, Vector4f v1, float x, float y) {
+        return (x - v0.x) * (v1.y - v0.y) - (y - v0.y) * (v1.x - v0.x);
+    }
+
+    @Override
+    protected void drawUI() {
+        ui.draw();
+    }
+}

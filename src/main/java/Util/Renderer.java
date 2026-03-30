@@ -1,0 +1,34 @@
+package Util;
+
+import UI.UI;
+import UI.UIElement;
+
+import java.util.List;
+
+public abstract class Renderer {
+    private final Input input;
+    private final MouseProcessing mouse;
+
+    protected UI ui;
+
+    public Renderer(Input input, MouseProcessing mouse) {
+        this.input = input;
+        this.mouse = mouse;
+    }
+
+    public Input getInput() {
+        return input;
+    }
+
+    public MouseProcessing getMouse() {
+        return mouse;
+    }
+
+    public void addUIElement(UIElement element) {
+        ui.addElement(element);
+    }
+
+    public abstract void render(List<RenderPolygon> renderPolygons, Projection projection);
+
+    protected abstract void drawUI();
+}
