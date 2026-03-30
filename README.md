@@ -39,7 +39,7 @@ A modular 3D renderer engine with abstract rendering backend. Currently implemen
     // Future OpenGL renderer
     // Renderer renderer = new OpenGLRenderer(width, height);
 
-    Engine engine = new Engine(renderer, width, height, 70);
+    Engine engine = new Engine(renderer, width, height);
 
 ## Dependencies
 
