@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class AssetLoader {
-    public static final String MODEL_FOLDER_PATH = "src/main/java/Assets/Models/";
-    public static final String TEXTURES_FOLDER_PATH = "src/main/java/Assets/Textures/";
+    public static final String RESOURCES_FOLDER_PATH = "src/main/resources/";
+    public static final String ASSETS_FOLDER_PATH = RESOURCES_FOLDER_PATH + "Assets/";
+    public static final String MODEL_FOLDER_PATH = ASSETS_FOLDER_PATH + "Models/";
+    public static final String TEXTURES_FOLDER_PATH = ASSETS_FOLDER_PATH + "Textures/";
 
     public static final List<Model> models = new ArrayList<>();
     public static final List<Texture> textures = new ArrayList<>();
