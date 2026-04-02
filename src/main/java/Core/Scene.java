@@ -27,8 +27,8 @@ public final class Scene {
         Logger.info("Added Object to the scene");
     }
 
-    public List<RenderPolygon> setRenderPolygons(float deltaTime) {
-        Matrix4f view = camera.update(deltaTime);
+    public List<RenderPolygon> setRenderPolygons() {
+        Matrix4f view = camera.update();
         List<RenderPolygon> renderPolygons = new ArrayList<>();
         for(Object obj : objects) {
             obj.render(view, renderPolygons);
