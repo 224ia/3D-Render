@@ -45,7 +45,7 @@ public final class Engine {
 
         this.fov = BASE_FOV;
 
-        projection = new Projection(width, height, (float) width / height, fov);
+        projection = new Projection(width, height, (float) width / height, 0.1f, 1000f, fov);
 
         fovText = UIBuilder.createTextLabel(0, 0, 400, 100,
                 new Color(1f, 1f, 1f, 0.5f), "FOV: " + fov, new Color(0f, 0f, 0f, 1f), 50);

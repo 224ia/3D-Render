@@ -37,10 +37,7 @@ public final class Camera {
 
         if (dir.length() > 0) dir.normalize();
 
-        view.get3x3(dirMat);
-        // For movement, we need rotate(yaw, pitch), so flip the signs
-        dirMat.m02 *= -1;
-        dirMat.m20 *= -1;
+        view.get3x3(dirMat).invert();
         dir.mul(dirMat);
 
         float deltaSpeed = speed * deltaTime;

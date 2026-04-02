@@ -28,7 +28,7 @@ void main() {
             .rotation(180, 0, 0).size(0.1f).build());
     scene.addObject(new ObjectBuilder().position(-8, 3, 5).rotation(0, 80, 180)
             .color(0.9f).model("TextureTest").texture("Wall").build());
-    scene.addObject(new ObjectBuilder().model("sdas").texture("qsesa").build());
+    scene.addObject(new ObjectBuilder().model("sdas").texture("qsesa").position(0, -10, 10).build());
 
     engine.start();
 }

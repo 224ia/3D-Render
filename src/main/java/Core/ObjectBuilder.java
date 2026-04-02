@@ -17,11 +17,11 @@ public final class ObjectBuilder {
     private BufferedImage texture = null;
 
     public ObjectBuilder position(float x, float y, float z) {
-        this.pos.set(x, y, z);
+        this.pos.set(x, -y, z); // Inverted y for right translation
         return this;
     }
     public ObjectBuilder position(Vector3f pos) {
-        this.pos = pos;
+        this.pos = new Vector3f(pos.x, -pos.y, pos.z); // Inverted y for right translation
         return this;
     }
 
@@ -30,7 +30,7 @@ public final class ObjectBuilder {
         return this;
     }
     public ObjectBuilder rotation(Vector3f rot) {
-        this.rot = rot;
+        this.rot = new Vector3f(rot.x, rot.y, rot.z);;
         return this;
     }
 
@@ -43,7 +43,7 @@ public final class ObjectBuilder {
         return this;
     }
     public ObjectBuilder size(Vector3f size) {
-        this.size = size;
+        this.size = new Vector3f(size.x, size.y, size.z);
         return this;
     }
 
@@ -56,7 +56,7 @@ public final class ObjectBuilder {
         return this;
     }
     public ObjectBuilder color(Vector3f color) {
-        this.color = color;
+        this.color = new Vector3f(color.x, color.y, color.z);
         return this;
     }
 

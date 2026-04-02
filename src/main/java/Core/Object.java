@@ -57,10 +57,6 @@ public class Object {
             v1.pos.mul(mvp);
             v2.pos.mul(mvp);
 
-            v0.invZ = 1f / v0.pos.z;
-            v1.invZ = 1f / v1.pos.z;
-            v2.invZ = 1f / v2.pos.z;
-
             Vector4f normal = new Vector4f(polygon.normal, 0);
             normal.mul(mvp);
             normal.normalize();

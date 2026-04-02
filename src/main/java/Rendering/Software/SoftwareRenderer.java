@@ -32,7 +32,7 @@ public final class SoftwareRenderer extends Renderer {
         this.ui = new SoftwareUI(g2);
 
         this.pixels = new float[frame.WIDTH * frame.HEIGHT];
-        Arrays.fill(pixels, Float.MAX_VALUE);
+        Arrays.fill(pixels, 1f);
     }
 
     public SoftwareRenderer(int width, int height) {
@@ -48,7 +48,7 @@ public final class SoftwareRenderer extends Renderer {
         g2.setColor(new Color(147, 147, 147, 255));
         g2.fillRect(0, 0, frame.WIDTH, frame.HEIGHT);
 
-        Arrays.fill(pixels, Float.MAX_VALUE);
+        Arrays.fill(pixels, 1f);
 
         for (RenderPolygon polygon : renderPolygons) {
             projectVertices(g2, polygon.v0, polygon.v1, polygon.v2, polygon.normal, polygon.color, polygon.texture, projection);
@@ -61,9 +61,9 @@ public final class SoftwareRenderer extends Renderer {
     public void projectVertices(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, Vector4f normal, Vector3f color, BufferedImage texture, Projection projection) {
         if (v0.pos.z <= 0 || v1.pos.z <= 0 || v2.pos.z <= 0) return;
 
-        v0.pos = projection.project(v0.pos);
-        v1.pos = projection.project(v1.pos);
-        v2.pos = projection.project(v2.pos);
+        projection.project(v0.pos);
+        projection.project(v1.pos);
+        projection.project(v2.pos);
 
         Vector4f lightDir = new Vector4f(1, 1, 1, 0).normalize();
         float dot = normal.dot(lightDir.negate()) * 0.5f + 0.5f;
@@ -83,9 +83,9 @@ public final class SoftwareRenderer extends Renderer {
         maxY = Math.min(frame.HEIGHT - 1, maxY);
 
         if (v0.uv != null && v1.uv != null && v2.uv != null && texture != null) {
-            v0.uv.mul(v0.invZ);
-            v1.uv.mul(v1.invZ);
-            v2.uv.mul(v2.invZ);
+            v0.uv.mul(v0.pos.w);
+            v1.uv.mul(v1.pos.w);
+            v2.uv.mul(v2.pos.w);
         }
 
         float area = edgeFunction(v0.pos, v1.pos, v2.pos);
@@ -99,38 +99,40 @@ public final class SoftwareRenderer extends Renderer {
                 if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
                     w0 /= area; w1 /= area; w2 /= area;
 
-                    float z = 1f / (w0 * v0.invZ + w1 * v1.invZ + w2 * v2.invZ);
-
                     // Z-Buffer
-                    if (pixels[y * frame.WIDTH + x] < z) continue;
-                    pixels[y * frame.WIDTH + x] = z;
+                    float zNorm = w0 * v0.pos.z + w1 * v1.pos.z + w2 * v2.pos.z;
+                    if (zNorm < pixels[y * frame.WIDTH + x]) {
+                        pixels[y * frame.WIDTH + x] = zNorm;
 
-                    // Lightning
-                    float r = color.x * dot;
-                    float g = color.y * dot;
-                    float b = color.z * dot;
+                        float zInterpolated = 1f / (w0 * v0.pos.w + w1 * v1.pos.w + w2 * v2.pos.w);
 
-                    if (v0.uv != null && v1.uv != null && v2.uv != null && texture != null) {
-                        float u = (w0 * v0.uv.x + w1 * v1.uv.x + w2 * v2.uv.x) * z;
-                        float v = (w0 * v0.uv.y + w1 * v1.uv.y + w2 * v2.uv.y) * z;
+                        // Lighting
+                        float r = color.x * dot;
+                        float g = color.y * dot;
+                        float b = color.z * dot;
 
-                        int texX = (int)(u * texture.getWidth());
-                        int texY = (int)(v * texture.getHeight());
+                        if (v0.uv != null && v1.uv != null && v2.uv != null && texture != null) {
+                            float u = (w0 * v0.uv.x + w1 * v1.uv.x + w2 * v2.uv.x) * zInterpolated;
+                            float v = (w0 * v0.uv.y + w1 * v1.uv.y + w2 * v2.uv.y) * zInterpolated;
 
-                        texX = Math.min(texX, texture.getWidth() - 1);
-                        texY = Math.min(texY, texture.getHeight() - 1);
+                            int texX = (int) (u * texture.getWidth());
+                            int texY = (int) (v * texture.getHeight());
 
-                        Color texColor = new Color(texture.getRGB(texX, texY));
+                            texX = Math.min(texX, texture.getWidth() - 1);
+                            texY = Math.min(texY, texture.getHeight() - 1);
 
-                        int rt = (int)(texColor.getRed() * r);
-                        int gt = (int)(texColor.getGreen() * g);
-                        int bt = (int)(texColor.getBlue() * b);
+                            Color texColor = new Color(texture.getRGB(texX, texY));
 
-                        g2.setColor(new Color(rt, gt, bt));
-                    } else {
-                        g2.setColor(new Color(r, g, b));
+                            int rt = (int) (texColor.getRed() * r);
+                            int gt = (int) (texColor.getGreen() * g);
+                            int bt = (int) (texColor.getBlue() * b);
+
+                            g2.setColor(new Color(rt, gt, bt));
+                        } else {
+                            g2.setColor(new Color(r, g, b));
+                        }
+                        g2.fillRect(x, y, 1, 1);
                     }
-                    g2.fillRect(x, y, 1, 1);
                 }
             }
         }
