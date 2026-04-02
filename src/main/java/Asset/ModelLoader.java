@@ -1,11 +1,12 @@
-package Util;
+package Asset;
 
+import Geometry.Polygon;
+import Geometry.Vertic;
+import Util.Logger;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,46 +14,35 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class AssetLoader {
-    public static final String RESOURCES_FOLDER_PATH = "src/main/resources/";
-    public static final String ASSETS_FOLDER_PATH = RESOURCES_FOLDER_PATH + "Assets/";
-    public static final String MODEL_FOLDER_PATH = ASSETS_FOLDER_PATH + "Models/";
-    public static final String TEXTURES_FOLDER_PATH = ASSETS_FOLDER_PATH + "Textures/";
+import static Asset.Paths.*;
 
+public class ModelLoader {
     public static final List<Model> models = new ArrayList<>();
-    public static final List<Texture> textures = new ArrayList<>();
+    private static Model defaultModel;
 
     public static void init() {
-        if (textures.isEmpty()) {
-            File folder = new File(TEXTURES_FOLDER_PATH);
-            if (folder.exists() && folder.isDirectory()) {
-                File[] files = folder.listFiles((dir, name) -> name.endsWith(".png"));
-                if (files != null) {
-                    for (File file : files) {
-                        String name = file.getName().replace(".png", "");
-                        try {
-                            BufferedImage image = ImageIO.read(file);
-                            textures.add(new Texture(name, image));
-                            System.out.println("Loaded texture: " + name);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
         if (models.isEmpty()) {
             File folder = new File(MODEL_FOLDER_PATH);
             if (folder.exists() && folder.isDirectory()) {
+                File base = new File(MODEL_FOLDER_PATH, DEFAULT_MODEL_PATH);
+                if (base.exists()) {
+                    String name = base.getName().replace(".obj", "");
+                    defaultModel = new Model(name, loadModel(DEFAULT_MODEL_PATH));
+                    Logger.info("Base model is loaded");
+                }
+
                 File[] files = folder.listFiles((dir, name) -> name.endsWith(".obj"));
                 if (files != null) {
                     for (File file : files) {
                         String name = file.getName().replace(".obj", "");
                         models.add(new Model(name, loadModel(file.getName())));
-                        System.out.println("Loaded model: " + name);
+                        Logger.info("Loaded model: " + name);
                     }
                 }
             }
+            Logger.info("Models are initialized");
+        } else {
+            Logger.error("Models are already initialized");
         }
     }
 
@@ -62,17 +52,13 @@ public final class AssetLoader {
         ArrayList<Vector2f> uvs = new ArrayList<>();
         ArrayList<Polygon> polygons = new ArrayList<>();
         try {
-            int it = 0;
             List<String> lines = Files.readAllLines(Paths.get(MODEL_FOLDER_PATH + path));
             for (String line : lines) {
                 String[] parts = line.split(" ");
                 switch (parts[0]) {
-                    case "v" -> {
-                        vertices.add(new Vertic(new Vector4f(Float.parseFloat(parts[1]),
-                                Float.parseFloat(parts[2]),
-                                Float.parseFloat(parts[3]), 1), null));
-                        it = (it + 1) % 3;
-                    }
+                    case "v" -> vertices.add(new Vertic(new Vector4f(Float.parseFloat(parts[1]),
+                            Float.parseFloat(parts[2]),
+                            Float.parseFloat(parts[3]), 1), null));
                     case "vn" -> normals.add(new Vector3f(Float.parseFloat(parts[1]),
                             Float.parseFloat(parts[2]),
                             Float.parseFloat(parts[3])));
@@ -100,16 +86,14 @@ public final class AssetLoader {
     }
 
     public static Model getModel(String name) {
-        return models.stream()
+        Model got = models.stream()
                 .filter(m -> m.getName().equals(name))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public static Texture getTexture(String name) {
-        return textures.stream()
-                .filter(t -> t.getName().equals(name))
-                .findFirst()
-                .orElse(null);
+        if (got != null) return got;
+        if (name != null) {
+            Logger.error("No model named: " + name);
+        }
+        return defaultModel;
     }
 }

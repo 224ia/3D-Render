@@ -1,5 +1,7 @@
 package Software;
 
+import Util.Logger;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -22,7 +24,8 @@ public final class Frame extends JPanel {
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        System.out.println("Frame was created");
+
+        Logger.info("Frame was created");
 
         gameImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }

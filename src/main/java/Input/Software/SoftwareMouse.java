@@ -1,6 +1,6 @@
-package Software;
+package Input.Software;
 
-import Util.MouseProcessing;
+import Input.MouseProcessing;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,11 +1,10 @@
 package Core;
 
-import Util.Polygon;
-import Util.RenderPolygon;
-import Util.Vertic;
+import Geometry.Polygon;
+import Geometry.RenderPolygon;
+import Geometry.Vertic;
 import org.joml.*;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.Math;
 import java.util.List;
@@ -14,7 +13,7 @@ public class Object {
     public Vector3f pos;
     public Vector3f rot;
     public Vector3f size;
-    public Color color;
+    public Vector3f color;
 
     private Matrix4f fullMatrix;
 
@@ -22,7 +21,7 @@ public class Object {
 
     private final BufferedImage texture;
 
-    public Object(Vector3f pos, Vector3f rot, Vector3f size, Color color, List<Polygon> polygons, BufferedImage texture) {
+    public Object(Vector3f pos, Vector3f rot, Vector3f size, Vector3f color, List<Polygon> polygons, BufferedImage texture) {
         this.pos = pos;
         this.rot = rot;
         this.size = size;

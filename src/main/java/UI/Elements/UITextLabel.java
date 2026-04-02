@@ -1,4 +1,6 @@
-package UI;
+package UI.Elements;
+
+import UI.UIElement;
 
 import java.awt.*;
 

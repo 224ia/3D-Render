@@ -1,5 +1,8 @@
-package Util;
+package Rendering;
 
+import Geometry.RenderPolygon;
+import Input.Input;
+import Input.MouseProcessing;
 import UI.UI;
 import UI.UIElement;
 

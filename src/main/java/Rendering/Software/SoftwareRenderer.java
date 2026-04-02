@@ -1,6 +1,14 @@
-package Software;
+package Rendering.Software;
 
-import Util.*;
+import Geometry.RenderPolygon;
+import Geometry.Vertic;
+import Input.Software.SoftwareInput;
+import Input.Software.SoftwareMouse;
+import Rendering.Projection;
+import Rendering.Renderer;
+import Software.Frame;
+import UI.Software.SoftwareUI;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.awt.*;
@@ -50,7 +58,7 @@ public final class SoftwareRenderer extends Renderer {
         frame.updateImage(image);
     }
 
-    public void projectVertices(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, Vector4f normal, Color color, BufferedImage texture, Projection projection) {
+    public void projectVertices(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, Vector4f normal, Vector3f color, BufferedImage texture, Projection projection) {
         if (v0.pos.z <= 0 || v1.pos.z <= 0 || v2.pos.z <= 0) return;
 
         v0.pos = projection.project(v0.pos);
@@ -63,7 +71,7 @@ public final class SoftwareRenderer extends Renderer {
         drawTriangle(g2, v0, v1, v2, texture, color, dot);
     }
 
-    private void drawTriangle(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, BufferedImage texture, Color color, float dot) {
+    private void drawTriangle(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, BufferedImage texture, Vector3f color, float dot) {
         int minX = (int) Math.min(v0.pos.x, Math.min(v1.pos.x, v2.pos.x));
         int maxX = (int) Math.max(v0.pos.x, Math.max(v1.pos.x, v2.pos.x));
         int minY = (int) Math.min(v0.pos.y, Math.min(v1.pos.y, v2.pos.y));
@@ -97,11 +105,10 @@ public final class SoftwareRenderer extends Renderer {
                     if (pixels[y * frame.WIDTH + x] < z) continue;
                     pixels[y * frame.WIDTH + x] = z;
 
-                    // Object color [0, 1]
-                    float div = 1 / 255f;
-                    float r = color.getRed() * div;
-                    float g = color.getGreen() * div;
-                    float b = color.getBlue() * div;
+                    // Lightning
+                    float r = color.x * dot;
+                    float g = color.y * dot;
+                    float b = color.z * dot;
 
                     if (v0.uv != null && v1.uv != null && v2.uv != null && texture != null) {
                         float u = (w0 * v0.uv.x + w1 * v1.uv.x + w2 * v2.uv.x) * z;
@@ -115,9 +122,9 @@ public final class SoftwareRenderer extends Renderer {
 
                         Color texColor = new Color(texture.getRGB(texX, texY));
 
-                        int rt = (int)(texColor.getRed() * dot * r);
-                        int gt = (int)(texColor.getGreen() * dot * g);
-                        int bt = (int)(texColor.getBlue() * dot * b);
+                        int rt = (int)(texColor.getRed() * r);
+                        int gt = (int)(texColor.getGreen() * g);
+                        int bt = (int)(texColor.getBlue() * b);
 
                         g2.setColor(new Color(rt, gt, bt));
                     } else {

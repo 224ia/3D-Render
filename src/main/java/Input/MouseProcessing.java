@@ -1,4 +1,4 @@
-package Util;
+package Input;
 
 public abstract class MouseProcessing {
     protected float yaw = 0;

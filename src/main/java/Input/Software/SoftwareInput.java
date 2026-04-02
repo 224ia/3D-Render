@@ -1,6 +1,6 @@
-package Software;
+package Input.Software;
 
-import Util.Input;
+import Input.Input;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;

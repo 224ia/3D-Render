@@ -1,11 +1,13 @@
 package Core;
 
+import Asset.ModelLoader;
+import Asset.TextureLoader;
+import Geometry.RenderPolygon;
+import Rendering.Projection;
 import UI.UIBuilder;
-import UI.UITextLabel;
-import Util.AssetLoader;
-import Util.Projection;
-import Util.RenderPolygon;
-import Util.Renderer;
+import UI.Elements.UITextLabel;
+import Rendering.Renderer;
+import Util.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +25,7 @@ public final class Engine {
     private int frames = 0;
     private final float ONE_BY_BILLION = 1 / 1_000_000_000f;
     private float changeTime = 0;
-    private final float FPS_UPDATE = 0.4f;
+    private final float FPS_UPDATE_TIME = 0.4f;
 
     public final Projection projection;
 
@@ -52,9 +54,12 @@ public final class Engine {
         renderer.addUIElement(fovText);
         renderer.addUIElement(fpsText);
 
-        AssetLoader.init();
+        ModelLoader.init();
+        TextureLoader.init();
 
         startTime = System.nanoTime();
+
+        Logger.info("Engine was created");
     }
 
     public void setScene(float cameraSpeed) {
@@ -74,6 +79,7 @@ public final class Engine {
             fpsCount();
         });
         timer.start();
+        Logger.info("Engine was started");
     }
 
     private void fpsCount() {
@@ -82,7 +88,7 @@ public final class Engine {
         changeTime += deltaTime;
         frames += 1;
         startTime = now;
-        if (changeTime >= FPS_UPDATE) {
+        if (changeTime >= FPS_UPDATE_TIME) {
             fpsText.text = "FPS: " + (int) (frames / changeTime);
             changeTime = 0;
             frames = 0;
@@ -102,7 +108,6 @@ public final class Engine {
     private void draw() {
         if (scene != null) {
             List<RenderPolygon> renderPolygons = scene.setRenderPolygons(Math.max(deltaTime, 1f / 1000));
-//            renderPolygons.sort((a, b) -> Float.compare(b.depth, a.depth));
             renderer.render(renderPolygons, projection);
         }
     }

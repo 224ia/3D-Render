@@ -1,8 +1,9 @@
 package Core;
 
-import Software.Keys;
-import Util.Input;
-import Util.MouseProcessing;
+import Input.Software.Keys;
+import Input.Input;
+import Input.MouseProcessing;
+import Util.Logger;
 import org.joml.*;
 
 public final class Camera {
@@ -20,6 +21,8 @@ public final class Camera {
         this.input = input;
         this.mouse = mouse;
         this.speed = speed;
+
+        Logger.info("Camera was created");
     }
 
     public Matrix4f update(float deltaTime) {

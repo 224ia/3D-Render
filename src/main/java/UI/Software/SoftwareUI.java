@@ -1,8 +1,8 @@
-package Software;
+package UI.Software;
 
 import UI.UI;
 import UI.UIElement;
-import UI.UITextLabel;
+import UI.Elements.UITextLabel;
 
 import java.awt.*;
 
