@@ -24,11 +24,11 @@ void main() {
 
     // Create objects using ObjectBuilder. All parameters have default values so they are optional
     // See ObjectBuilder for available methods
-    scene.addObject(new ObjectBuilder().model("Player").color(1f).texture("Background")
-            .rotation(180, 0, 0).size(0.1f).build());
     scene.addObject(new ObjectBuilder().position(-8, 3, 5).rotation(0, 80, 180)
-            .color(0.9f).model("TextureTest").texture("Wall").build());
-    scene.addObject(new ObjectBuilder().model("sdas").texture("qsesa").position(0, -10, 10).build());
+            .color(0.9f).model("TextureTest").texture("Wall").build()); // All parameters are used
+    scene.addObject(new ObjectBuilder().model("Player").position(5, 0, -5).texture("Background").build()); // Some parameters aren't used
+    scene.addObject(new ObjectBuilder().build()); // No parameters used
+    scene.addObject(new ObjectBuilder().model("sdas").texture("qsesa").position(0, -10, 10).build()); // Wrong names used
 
     engine.start();
 }
