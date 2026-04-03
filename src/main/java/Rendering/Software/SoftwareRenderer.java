@@ -68,10 +68,10 @@ public final class SoftwareRenderer extends Renderer {
         Vector4f lightDir = new Vector4f(1, 1, 1, 0).normalize();
         float dot = normal.dot(lightDir.negate()) * 0.5f + 0.5f;
 
-        drawTriangle(g2, v0, v1, v2, texture, color, dot);
+        drawTriangleBarycentric(g2, v0, v1, v2, texture, color, dot);
     }
 
-    private void drawTriangle(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, BufferedImage texture, Vector3f color, float dot) {
+    private void drawTriangleBarycentric(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, BufferedImage texture, Vector3f color, float dot) {
         int minX = (int) Math.min(v0.pos.x, Math.min(v1.pos.x, v2.pos.x));
         int maxX = (int) Math.max(v0.pos.x, Math.max(v1.pos.x, v2.pos.x));
         int minY = (int) Math.min(v0.pos.y, Math.min(v1.pos.y, v2.pos.y));
