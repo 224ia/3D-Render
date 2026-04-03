@@ -16,7 +16,7 @@ private final Renderer renderer = RendererType.SOFTWARE.create(WIDTH, HEIGHT);
 private final Engine engine = new Engine(renderer, WIDTH, HEIGHT);
 
 private final UITextLabel text = UIBuilder.createTextLabel(760, 980, 400, 100,
-        new Color(1f, 1f, 1f, 0.5f), "Юхууу", new Color(0f, 0f, 0f, 1f), 50);
+        new Color(1f, 1f, 1f, 0.5f), "Some text", new Color(0f, 0f, 0f, 1f), 50);
 private final UITextLabel fovText = UIBuilder.createTextLabel(0, 0, 400, 100,
         new Color(1f, 1f, 1f, 0.5f), "FOV: 100", new Color(0f, 0f, 0f, 1f), 50);
 private final UITextLabel fpsText = UIBuilder.createTextLabel(0,200, 400, 100,
@@ -34,8 +34,8 @@ void main() {
     // See ObjectBuilder for available methods
     // Test Objects
     scene.addObject(new ObjectBuilder().position(-8, 3, 5).rotation(0, 80, 180)
-            .color(0.9f).model("TextureTest").texture("Wall").build()); // All parameters are used
-    scene.addObject(new ObjectBuilder().model("Player").position(5, 0, -5).texture("Background").build()); // Some parameters aren't used
+            .color(0.9f).model("TextureTest").texture("Wall").build()); // All parameters used
+    scene.addObject(new ObjectBuilder().model("Player").position(5, 0, -5).texture("Background").build()); // Some parameters not used
     scene.addObject(new ObjectBuilder().build()); // No parameters used
     scene.addObject(new ObjectBuilder().model("sdas").texture("qsesa").position(0, -10, 10).build()); // Wrong names used
 

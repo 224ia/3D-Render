@@ -16,9 +16,6 @@ public final class Engine {
     private final Renderer renderer;
     private Scene scene;
 
-    public final int WIDTH;
-    public final int HEIGHT;
-
     public final Projection projection;
 
     private int fov;
@@ -28,9 +25,6 @@ public final class Engine {
 
     public Engine(Renderer renderer, int width, int height) {
         this.renderer = renderer;
-
-        this.WIDTH = width;
-        this.HEIGHT = height;
 
         this.fov = BASE_FOV;
 

@@ -9,10 +9,10 @@ import org.joml.Vector3f;
 import java.awt.image.BufferedImage;
 
 public final class ObjectBuilder {
-    private Vector3f pos = new Vector3f(0f, 0f,0f);
-    private Vector3f rot = new Vector3f(0f, 0f,0f);
-    private Vector3f size = new Vector3f(1f, 1f, 1f);
-    private Vector3f color = new Vector3f(1f, 1f, 1f);
+    private final Vector3f pos = new Vector3f(0f, 0f,0f);
+    private final Vector3f rot = new Vector3f(0f, 0f,0f);
+    private final Vector3f size = new Vector3f(1f, 1f, 1f);
+    private final Vector3f color = new Vector3f(1f, 1f, 1f);
     private Model model = ModelLoader.getModel(null);
     private BufferedImage texture = null;
 
@@ -21,7 +21,7 @@ public final class ObjectBuilder {
         return this;
     }
     public ObjectBuilder position(Vector3f pos) {
-        this.pos = new Vector3f(pos.x, -pos.y, pos.z); // Inverted y for right translation
+        this.pos.set(pos.x, -pos.y, pos.z); // Inverted y for right translation
         return this;
     }
 
@@ -30,7 +30,7 @@ public final class ObjectBuilder {
         return this;
     }
     public ObjectBuilder rotation(Vector3f rot) {
-        this.rot = new Vector3f(rot.x, rot.y, rot.z);;
+        this.rot.set(rot.x, rot.y, rot.z);
         return this;
     }
 
@@ -43,7 +43,7 @@ public final class ObjectBuilder {
         return this;
     }
     public ObjectBuilder size(Vector3f size) {
-        this.size = new Vector3f(size.x, size.y, size.z);
+        this.size.set(size.x, size.y, size.z);
         return this;
     }
 
@@ -56,7 +56,7 @@ public final class ObjectBuilder {
         return this;
     }
     public ObjectBuilder color(Vector3f color) {
-        this.color = new Vector3f(color.x, color.y, color.z);
+        this.color.set(color.x, color.y, color.z);
         return this;
     }
 
