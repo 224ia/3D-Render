@@ -95,16 +95,14 @@ public final class SoftwareRenderer extends Renderer {
             for (int x = minX; x <= maxX; x++) {
                 float w0 = edgeFunction(v1.pos, v2.pos, x, y);
                 float w1 = edgeFunction(v2.pos, v0.pos, x, y);
-                float w2 = edgeFunction(v0.pos, v1.pos, x, y);
+                float w2 = area - w0 - w1;
                 if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                    w0 /= area; w1 /= area; w2 /= area;
+                    w0 /= area; w1 /= area; w2 = 1 - w0 - w1;
 
                     // Z-Buffer
                     float zNorm = w0 * v0.pos.z + w1 * v1.pos.z + w2 * v2.pos.z;
                     if (zNorm < pixels[y * frame.WIDTH + x]) {
                         pixels[y * frame.WIDTH + x] = zNorm;
-
-                        float zInterpolated = 1f / (w0 * v0.pos.w + w1 * v1.pos.w + w2 * v2.pos.w);
 
                         // Lighting
                         float r = color.x * dot;
@@ -112,6 +110,8 @@ public final class SoftwareRenderer extends Renderer {
                         float b = color.z * dot;
 
                         if (v0.uv != null && v1.uv != null && v2.uv != null && texture != null) {
+                            float zInterpolated = 1f / (w0 * v0.pos.w + w1 * v1.pos.w + w2 * v2.pos.w);
+
                             float u = (w0 * v0.uv.x + w1 * v1.uv.x + w2 * v2.uv.x) * zInterpolated;
                             float v = (w0 * v0.uv.y + w1 * v1.uv.y + w2 * v2.uv.y) * zInterpolated;
 
