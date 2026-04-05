@@ -63,8 +63,7 @@ public class Object {
 
             Vector4f diff = new Vector4f(v0.pos).add(v1.pos).add(v2.pos).div(3);
             if (diff.dot(normal) <= 0) {
-                float depth = (v0.pos.z + v1.pos.z + v2.pos.z) / 3f;
-                renderPolygons.add(new RenderPolygon(v0, v1, v2, normal, texture, this.color, depth));
+                renderPolygons.add(new RenderPolygon(v0, v1, v2, normal, texture, this.color));
             }
         }
     }

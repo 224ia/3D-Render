@@ -51,24 +51,24 @@ public final class SoftwareRenderer extends Renderer {
         Arrays.fill(pixels, 1f);
 
         for (RenderPolygon polygon : renderPolygons) {
-            projectVertices(g2, polygon.v0, polygon.v1, polygon.v2, polygon.normal, polygon.color, polygon.texture, projection);
+            projectVertices(g2, polygon, projection);
         }
 
         if (ui != null) drawUI();
         frame.updateImage(image);
     }
 
-    public void projectVertices(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, Vector4f normal, Vector3f color, BufferedImage texture, Projection projection) {
-        if (v0.pos.z <= 0 || v1.pos.z <= 0 || v2.pos.z <= 0) return;
+    public void projectVertices(Graphics2D g2, RenderPolygon polygon, Projection projection) {
+        if (polygon.v0.pos.z <= 0 || polygon.v1.pos.z <= 0 || polygon.v2.pos.z <= 0) return;
 
-        projection.project(v0.pos);
-        projection.project(v1.pos);
-        projection.project(v2.pos);
+        projection.project(polygon.v0.pos);
+        projection.project(polygon.v1.pos);
+        projection.project(polygon.v2.pos);
 
         Vector4f lightDir = new Vector4f(1, 1, 1, 0).normalize();
-        float dot = normal.dot(lightDir.negate()) * 0.5f + 0.5f;
+        float dot = polygon.normal.dot(lightDir.negate()) * 0.5f + 0.5f;
 
-        drawTriangleBarycentric(g2, v0, v1, v2, texture, color, dot);
+        drawTriangleBarycentric(g2, polygon.v0, polygon.v1, polygon.v2, polygon.texture, polygon.color, dot);
     }
 
     private void drawTriangleBarycentric(Graphics2D g2, Vertic v0, Vertic v1, Vertic v2, BufferedImage texture, Vector3f color, float dot) {
