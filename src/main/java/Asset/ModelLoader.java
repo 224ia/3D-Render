@@ -1,5 +1,6 @@
 package Asset;
 
+import Core.Cube;
 import Geometry.Polygon;
 import Geometry.Vertic;
 import Util.Logger;
@@ -44,6 +45,7 @@ public class ModelLoader {
         } else {
             Logger.error("Models are already initialized");
         }
+        models.add(new Model("Cube", Cube.createCube(new Vector3f(0f, 0, 0), 1f)));
     }
 
     public static ArrayList<Polygon> loadModel(String path) {

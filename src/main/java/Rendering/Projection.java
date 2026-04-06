@@ -37,9 +37,14 @@ public final class Projection {
     public void project(Vector4f v) {
         v.mul(PROJ_MATRIX);
         float invW = 1f / v.w;
-        v.x = (v.x * invW * 0.5f + 0.5f) * WIDTH;
-        v.y = (v.y * invW * 0.5f + 0.5f) * HEIGHT;
+        v.x = v.x * invW;
+        v.y = v.y * invW;
         v.z = v.z * invW;
         v.w = invW;
+    }
+
+    public void toScreen(Vector4f v) {
+        v.x = (v.x * 0.5f + 0.5f) * WIDTH;
+        v.y = (v.y * 0.5f + 0.5f) * HEIGHT;
     }
 }

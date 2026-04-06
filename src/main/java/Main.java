@@ -27,7 +27,7 @@ void main() {
     renderer.addUIElement(fovText);
     renderer.addUIElement(fpsText);
 
-    engine.setScene(10f);
+    engine.setScene(5f);
     Scene scene = engine.getScene();
 
     // Create objects using ObjectBuilder. All parameters have default values so they are optional
