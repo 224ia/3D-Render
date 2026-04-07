@@ -10,6 +10,7 @@ import java.lang.Math;
 import java.util.List;
 
 public class Object {
+    public String name;
     public Vector3f pos;
     public Vector3f rot;
     public Vector3f size;
@@ -21,7 +22,8 @@ public class Object {
 
     private final BufferedImage texture;
 
-    public Object(Vector3f pos, Vector3f rot, Vector3f size, Vector3f color, List<Polygon> polygons, BufferedImage texture) {
+    public Object(String name, Vector3f pos, Vector3f rot, Vector3f size, Vector3f color, List<Polygon> polygons, BufferedImage texture) {
+        this.name = name;
         this.pos = pos;
         this.rot = rot;
         this.size = size;

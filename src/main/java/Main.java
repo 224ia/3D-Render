@@ -2,7 +2,6 @@ import Core.Engine;
 import Core.Object;
 import Core.ObjectBuilder;
 import Core.Scene;
-import Rendering.Renderer;
 import Rendering.RendererType;
 import UI.Elements.UITextLabel;
 import UI.UIBuilder;
@@ -14,8 +13,7 @@ import java.util.List;
 public static final int WIDTH = 1920;
 public static final int HEIGHT = 1080;
 
-private final Renderer renderer = RendererType.SOFTWARE.create(WIDTH, HEIGHT);
-private final Engine engine = new Engine(renderer, WIDTH, HEIGHT);
+private final Engine engine = new Engine(RendererType.SOFTWARE, WIDTH, HEIGHT);
 
 private final UITextLabel text = UIBuilder.createTextLabel(760, 980, 400, 100,
         new Color(1f, 1f, 1f, 0.5f), "Some text", new Color(0f, 0f, 0f, 1f), 50);
@@ -27,16 +25,15 @@ private final UITextLabel fpsText = UIBuilder.createTextLabel(0,200, 400, 100,
 private final List<Object> objects = new ArrayList<>();
 
 void main() {
-    renderer.addUIElement(text);
-    renderer.addUIElement(fovText);
-    renderer.addUIElement(fpsText);
+    engine.addUIElement(text);
+    engine.addUIElement(fovText);
+    engine.addUIElement(fpsText);
 
     engine.setScene(5f);
     Scene scene = engine.getScene();
 
-
     // Create objects using ObjectBuilder. All parameters have default values so they are optional
-    // See ObjectBuilder for available methods
+    // See ObjectBuilder class for available methods
     // Test Objects
     objects.add(new ObjectBuilder().position(-8, 3, 5).rotation(0, 80, 180)
             .color(0.9f).model("TextureTest").texture("Wall").build()); // All parameters used

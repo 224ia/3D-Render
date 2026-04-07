@@ -9,12 +9,18 @@ import org.joml.Vector3f;
 import java.awt.image.BufferedImage;
 
 public final class ObjectBuilder {
+    private String name = "No name";
     private final Vector3f pos = new Vector3f(0f, 0f,0f);
     private final Vector3f rot = new Vector3f(0f, 0f,0f);
     private final Vector3f size = new Vector3f(1f, 1f, 1f);
     private final Vector3f color = new Vector3f(1f, 1f, 1f);
     private Model model = ModelLoader.getModel(null);
     private BufferedImage texture = null;
+
+    public ObjectBuilder name(String name) {
+        this.name = name != null ? name : "No name";
+        return this;
+    }
 
     public ObjectBuilder position(float x, float y, float z) {
         this.pos.set(x, -y, z); // Inverted y for right translation
@@ -71,6 +77,6 @@ public final class ObjectBuilder {
     }
 
     public Object build() {
-        return new Object(pos, rot, size, color, model.getPolygons(), texture);
+        return new Object(name, pos, rot, size, color, model.getPolygons(), texture);
     }
 }

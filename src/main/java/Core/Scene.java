@@ -24,7 +24,7 @@ public final class Scene {
 
     public void addObject(Object object) {
         objects.add(object);
-        Logger.info("Added Object to the scene");
+        Logger.info(String.format("Object \"%s\" added to the scene", object.name));
     }
 
     public List<RenderPolygon> setRenderPolygons() {
