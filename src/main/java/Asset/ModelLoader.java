@@ -94,7 +94,7 @@ public class ModelLoader {
                 .orElse(null);
         if (got != null) return got;
         if (name != null) {
-            Logger.error("No model named: " + name);
+            Logger.warn("No model named: " + name);
         }
         return defaultModel;
     }

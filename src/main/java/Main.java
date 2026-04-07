@@ -6,6 +6,7 @@ import Rendering.RendererType;
 import UI.Elements.UITextLabel;
 import UI.UIBuilder;
 import Util.FpsCounter;
+import Util.Logger;
 
 import java.awt.*;
 import java.util.List;
@@ -25,6 +26,8 @@ private final UITextLabel fpsText = UIBuilder.createTextLabel(0,200, 400, 100,
 private final List<Object> objects = new ArrayList<>();
 
 void main() {
+    Logger.setDebugMode(true); // The logger has the ability to output some information only in debug mode
+
     engine.addUIElement(text);
     engine.addUIElement(fovText);
     engine.addUIElement(fpsText);
@@ -45,6 +48,7 @@ void main() {
     for (Object object : objects) {
         scene.addObject(object);
     }
+    scene.addObject(null);
 
     engine.start(this::update);
 }

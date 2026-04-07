@@ -44,7 +44,7 @@ public class TextureLoader {
                 .findFirst()
                 .orElse(null);
         if (got == null && name != null) {
-            Logger.error("No texture named: " + name);
+            Logger.warn("No texture named: " + name);
         }
         return got;
     }

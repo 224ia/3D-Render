@@ -23,8 +23,12 @@ public final class Scene {
     }
 
     public void addObject(Object object) {
-        objects.add(object);
-        Logger.info(String.format("Object \"%s\" added to the scene", object.name));
+        if (object != null) {
+            objects.add(object);
+            Logger.info(String.format("Object \"%s\" added to the scene", object.name));
+        } else {
+            Logger.warn("Object can't be added to scene since it is null");
+        }
     }
 
     public List<RenderPolygon> setRenderPolygons() {
