@@ -36,6 +36,10 @@ public class Object {
         rot.add(angle);
         updateMatrix();
     }
+    public void rotate(float x, float y, float z) {
+        rot.add(new Vector3f(x, y, z));
+        updateMatrix();
+    }
 
     public void updateMatrix() {
         float angleX = (float) Math.toRadians(rot.x);
