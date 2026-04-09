@@ -25,7 +25,6 @@ public class Clipping {
         float v0dist = distToPlane(v0.pos);
         float v1dist = distToPlane(v1.pos);
         float t = v0dist / (v0dist - v1dist);
-        System.out.println(t);
 
         Vector4f pos = new Vector4f(v0.pos).lerp(v1.pos, t);
 
@@ -72,12 +71,16 @@ public class Clipping {
                 switch (x) {
                     case 0:
                         Clipping.setPlane(new Vector4f(0, -1, 0, 1), new Vector4f(0, 1, 0, 0));
+                        break;
                     case 1:
                         Clipping.setPlane(new Vector4f(0, 1, 0, 1), new Vector4f(0, -1, 0, 0));
+                        break;
                     case 2:
                         Clipping.setPlane(new Vector4f(-1, 0, 0, 1), new Vector4f(1, 0, 0, 0));
+                        break;
                     case 3:
                         Clipping.setPlane(new Vector4f(1, 0, 0, 1), new Vector4f(-1, 0, 0, 0));
+                        break;
                 }
                 new_t = Clipping.clipTriangle(t);
                 temp.addAll(new_t);

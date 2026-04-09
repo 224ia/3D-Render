@@ -51,28 +51,28 @@ public final class SoftwareRenderer extends Renderer {
         Arrays.fill(pixels, 1f);
 
         for (RenderPolygon polygon : renderPolygons) {
-//            Clipping.setPlane(new Vector4f(0, 0, 0.2f, 1), new Vector4f(0, 0, 1, 0));
-//            List<RenderPolygon> clippedByZ = Clipping.clipTriangle(polygon);
-//
-//            for (RenderPolygon clipped : clippedByZ) {
-//                projection.project(clipped.v0.pos);
-//                projection.project(clipped.v1.pos);
-//                projection.project(clipped.v2.pos);
-//            }
-//
-//            for (RenderPolygon finalPoly : Clipping.projectClip(clippedByZ)) {
-//                projection.toScreen(finalPoly.v0.pos);
-//                projection.toScreen(finalPoly.v1.pos);
-//                projection.toScreen(finalPoly.v2.pos);
-//
-//                Vector4f lightDir = new Vector4f(1, 1, 1, 0).normalize();
-//                float dot = finalPoly.normal.dot(lightDir.negate()) * 0.5f + 0.5f;
-//
-//                drawTriangleBarycentric(g2, finalPoly.v0, finalPoly.v1, finalPoly.v2,
-//                        finalPoly.texture, finalPoly.color, dot);
-//            }
+            Clipping.setPlane(new Vector4f(0, 0, 0.2f, 1), new Vector4f(0, 0, 1, 0));
+            List<RenderPolygon> clippedByZ = Clipping.clipTriangle(polygon);
 
-            projectVertices(g2, polygon, projection);
+            for (RenderPolygon clipped : clippedByZ) {
+                projection.project(clipped.v0.pos);
+                projection.project(clipped.v1.pos);
+                projection.project(clipped.v2.pos);
+            }
+
+            for (RenderPolygon finalPoly : Clipping.projectClip(clippedByZ)) {
+                projection.toScreen(finalPoly.v0.pos);
+                projection.toScreen(finalPoly.v1.pos);
+                projection.toScreen(finalPoly.v2.pos);
+
+                Vector4f lightDir = new Vector4f(1, 1, 1, 0).normalize();
+                float dot = finalPoly.normal.dot(lightDir.negate()) * 0.5f + 0.5f;
+
+                drawTriangleBarycentric(g2, finalPoly.v0, finalPoly.v1, finalPoly.v2,
+                        finalPoly.texture, finalPoly.color, dot);
+            }
+
+//            projectVertices(g2, polygon, projection);
         }
 
         if (ui != null) drawUI();

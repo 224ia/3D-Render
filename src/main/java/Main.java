@@ -45,6 +45,8 @@ void main() {
     objects.add(new ObjectBuilder().model("sdas").texture("qsesa").position(0, -10, 10).build()); // Wrong names used
     objects.add(new ObjectBuilder().model("Gun").texture("Wall").position(10, 10, -10).rotation(180, 0, 0).color(0.7f, 0.3f, 0.5f).build());
 
+    objects.add(new ObjectBuilder().position(0, 0, 10).build());
+
     for (Object object : objects) {
         scene.addObject(object);
     }
