@@ -13,18 +13,18 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class OpenGLModel extends Model {
-    public final int vao, vbo, ebo, vertexCount;
+    public final int vao, vbo, vertexCount;
 
-    public OpenGLModel(String name, int vertexCount, List<Float> vertexList, List<Float> normals, List<Float> uvs, List<Integer> polygons) {
+    public OpenGLModel(String name, List<Float> vertexList, List<Float> normals, List<Float> uvs, List<Integer> polygons) {
         super(name);
-        this.vertexCount = vertexCount;
+        this.vertexCount = polygons.size() / 7 * 3;
 
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
 
         vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        float[] vertices = getVertices(vertexCount, vertexList, normals, uvs);
+        float[] vertices = getVertices(vertexList, normals, uvs, polygons);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 32, 0);
@@ -36,40 +36,55 @@ public class OpenGLModel extends Model {
         glVertexAttribPointer(2, 2, GL_FLOAT, false, 32, 24);
         glEnableVertexAttribArray(2);
 
-        ebo = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        int[] indices = getIndices(polygons);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
-
         glBindVertexArray(0);
     }
 
-    private float[] getVertices(int vertexCount, List<Float> vertexList, List<Float> normals, List<Float> uvs) {
+    private float[] getVertices(List<Float> vertexList, List<Float> normals, List<Float> uvs, List<Integer> polygons) {
         float[] vertices = new float[vertexCount * 8];
-        for (int i = 0; i < vertexCount; i++) {
-            int ind = i * 8;
+        int outputVertex = 0;
 
-            vertices[ind] = vertexList.get(i * 3);
-            vertices[ind + 1] = vertexList.get(i * 3 + 1);
-            vertices[ind + 2] = vertexList.get(i * 3 + 2);
+        for (int i = 0; i < polygons.size(); i += 7) {
+            int normalIndex = polygons.get(i + 6);
 
-            vertices[ind + 3] = normals.get(i * 3);
-            vertices[ind + 4] = normals.get(i * 3 + 1);
-            vertices[ind + 5] = normals.get(i * 3 + 2);
+            for (int j = 0; j < 3; j++) {
+                int vertexIndex = polygons.get(i + j * 2);
+                int uvIndex = polygons.get(i + j * 2 + 1);
+                int out = outputVertex * 8;
 
-            vertices[ind + 6] = uvs.get(i * 2);
-            vertices[ind + 7] = uvs.get(i * 2 + 1);
+                writeVec3(vertices, out, vertexList, vertexIndex);
+                writeVec3(vertices, out + 3, normals, normalIndex);
+                writeVec2(vertices, out + 6, uvs, uvIndex);
+
+                outputVertex++;
+            }
         }
+
         return vertices;
     }
 
-    private int[] getIndices(List<Integer> polygons) {
-        int[] indices = new int[polygons.size()];
-        for (int i = 0; i < polygons.size(); i += 7) {
-            indices[i] = polygons.get(i);
-            indices[i + 1] = polygons.get(i + 2);
-            indices[i + 2] = polygons.get(i + 4);
+    private void writeVec3(float[] target, int offset, List<Float> source, int index) {
+        if (index < 0) {
+            target[offset] = 0f;
+            target[offset + 1] = 0f;
+            target[offset + 2] = 0f;
+            return;
         }
-        return indices;
+
+        int sourceOffset = index * 3;
+        target[offset] = source.get(sourceOffset);
+        target[offset + 1] = source.get(sourceOffset + 1);
+        target[offset + 2] = source.get(sourceOffset + 2);
+    }
+
+    private void writeVec2(float[] target, int offset, List<Float> source, int index) {
+        if (index < 0) {
+            target[offset] = 0f;
+            target[offset + 1] = 0f;
+            return;
+        }
+
+        int sourceOffset = index * 2;
+        target[offset] = source.get(sourceOffset);
+        target[offset + 1] = source.get(sourceOffset + 1);
     }
 }

@@ -62,28 +62,7 @@ public final class SoftwareRenderer extends Renderer {
             objectTranslation(object, view, renderPolygons);
         }
         for (RenderPolygon polygon : renderPolygons) {
-            Clipping.setPlane(new Vector4f(0, 0, 0.2f, 1), new Vector4f(0, 0, 1, 0));
-            List<RenderPolygon> clippedByZ = Clipping.clipTriangle(polygon);
-
-            for (RenderPolygon clipped : clippedByZ) {
-                projection.project(clipped.v0.pos);
-                projection.project(clipped.v1.pos);
-                projection.project(clipped.v2.pos);
-            }
-
-            for (RenderPolygon finalPoly : Clipping.projectClip(clippedByZ)) {
-                projection.toScreen(finalPoly.v0.pos);
-                projection.toScreen(finalPoly.v1.pos);
-                projection.toScreen(finalPoly.v2.pos);
-
-                Vector4f lightDir = new Vector4f(1, 1, 1, 0).normalize();
-                float dot = finalPoly.normal.dot(lightDir.negate()) * 0.5f + 0.5f;
-
-                drawTriangleBarycentric(g2, finalPoly.v0, finalPoly.v1, finalPoly.v2,
-                        finalPoly.texture, finalPoly.color, dot);
-            }
-
-//            projectVertices(g2, polygon, projection);
+            projectVertices(g2, polygon, projection);
         }
 
         if (ui != null) drawUI();
@@ -151,14 +130,17 @@ public final class SoftwareRenderer extends Renderer {
 
         float area = edgeFunction(v0.pos, v1.pos, v2.pos);
         if (area == 0) return;
+        float areaSign = Math.signum(area);
+        float absArea = Math.abs(area);
 
         for (int y = minY; y <= maxY; y++) {
             for (int x = minX; x <= maxX; x++) {
-                float w0 = edgeFunction(v1.pos, v2.pos, x, y);
-                float w1 = edgeFunction(v2.pos, v0.pos, x, y);
-                float w2 = area - w0 - w1;
+                float w0 = edgeFunction(v1.pos, v2.pos, x, y) * areaSign;
+                float w1 = edgeFunction(v2.pos, v0.pos, x, y) * areaSign;
+                float w2 = edgeFunction(v0.pos, v1.pos, x, y) * areaSign;
+
                 if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                    w0 /= area; w1 /= area; w2 = 1 - w0 - w1;
+                    w0 /= absArea; w1 /= absArea; w2 = 1 - w0 - w1;
 
                     // Z-Buffer
                     float zNorm = w0 * v0.pos.z + w1 * v1.pos.z + w2 * v2.pos.z;

@@ -49,7 +49,6 @@ public class ModelLoader {
     }
 
     public static Model loadModel(String path, String name) {
-        int verticCount = 0;
         ArrayList<Float> vertices = new ArrayList<>();
         ArrayList<Float> normals = new ArrayList<>();
         ArrayList<Float> uvs = new ArrayList<>();
@@ -63,7 +62,6 @@ public class ModelLoader {
                         vertices.add(Float.parseFloat(parts[1]));
                         vertices.add(Float.parseFloat(parts[2]));
                         vertices.add(Float.parseFloat(parts[3]));
-                        verticCount++;
                     }
                     case "vn" -> {
                         normals.add(Float.parseFloat(parts[1]));
@@ -75,14 +73,14 @@ public class ModelLoader {
                         uvs.add(Float.parseFloat(parts[2]));
                     }
                     case "f" -> {
-                        int normalIndex = -1;
-                        for (int i = 0; i < 3; i++) {
-                            String[] indexes = parts[1 + i].split("/");
-                            polygons.add(Integer.parseInt(indexes[0]) - 1);
-                            polygons.add(indexes[1].isEmpty() ? -1 : (Integer.parseInt(indexes[1]) - 1));
-                            normalIndex = Integer.parseInt(indexes[2]) - 1;
+                        int[][] faceVertices = new int[parts.length - 1][3];
+                        for (int i = 1; i < parts.length; i++) {
+                            faceVertices[i - 1] = parseFaceVertex(parts[i]);
                         }
-                        polygons.add(normalIndex);
+
+                        for (int i = 1; i < faceVertices.length - 1; i++) {
+                            addTriangle(polygons, faceVertices[0], faceVertices[i], faceVertices[i + 1]);
+                        }
                     }
                 }
             }
@@ -92,7 +90,7 @@ public class ModelLoader {
 
         return switch (rendererType) {
             case SOFTWARE -> new SoftwareModel(name, vertices, normals, uvs, polygons);
-            case OPEN_GL -> new OpenGLModel(name, verticCount, vertices, normals, uvs, polygons);
+            case OPEN_GL -> new OpenGLModel(name, vertices, normals, uvs, polygons);
         };
     }
 
@@ -105,6 +103,32 @@ public class ModelLoader {
         if (name != null) {
             Logger.warn("No model named: " + name);
         }
-        return defaultModel;
+        if (defaultModel != null) {
+            return defaultModel;
+        }
+        if (!models.isEmpty()) {
+            Logger.warn("Default model is missing, using the first loaded model");
+            return models.getFirst();
+        }
+        Logger.error("No models were loaded");
+        return null;
+    }
+
+    private static int[] parseFaceVertex(String facePart) {
+        String[] indexes = facePart.split("/");
+        int vertexIndex = Integer.parseInt(indexes[0]) - 1;
+        int uvIndex = indexes.length > 1 && !indexes[1].isEmpty() ? Integer.parseInt(indexes[1]) - 1 : -1;
+        int normalIndex = indexes.length > 2 && !indexes[2].isEmpty() ? Integer.parseInt(indexes[2]) - 1 : -1;
+        return new int[] { vertexIndex, uvIndex, normalIndex };
+    }
+
+    private static void addTriangle(List<Integer> polygons, int[] v0, int[] v1, int[] v2) {
+        polygons.add(v0[0]);
+        polygons.add(v0[1]);
+        polygons.add(v1[0]);
+        polygons.add(v1[1]);
+        polygons.add(v2[0]);
+        polygons.add(v2[1]);
+        polygons.add(v0[2] >= 0 ? v0[2] : v1[2] >= 0 ? v1[2] : v2[2]);
     }
 }

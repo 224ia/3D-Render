@@ -2,11 +2,10 @@ package Core;
 
 import Asset.ModelLoader;
 import Asset.TextureLoader;
-import Geometry.RenderPolygon;
+import Rendering.OpenGL.OpenGLRenderer;
 import Rendering.Projection;
 import Rendering.Renderer;
 import Rendering.RendererType;
-import Rendering.Software.SoftwareRenderer;
 import UI.UIElement;
 import Util.FpsCounter;
 import Util.Logger;
@@ -61,6 +60,21 @@ public final class Engine {
     }
 
     public void start(Runnable updateFunction) {
+        long timeFromStart = (System.nanoTime() - startTime) / 1_000_000;
+        Logger.info(String.format("Engine was started after %d milliseconds", timeFromStart));
+
+        if (renderer instanceof OpenGLRenderer openGLRenderer) {
+            while (!openGLRenderer.shouldClose()) {
+                mouseScroll();
+                draw();
+                FpsCounter.fpsCount();
+                if (updateFunction != null) {
+                    updateFunction.run();
+                }
+            }
+            return;
+        }
+
         Timer timer = new Timer(1, _ -> {
             mouseScroll();
             draw();
@@ -70,9 +84,6 @@ public final class Engine {
             }
         });
         timer.start();
-
-        long timeFromStart = (System.nanoTime() - startTime) / 1_000_000;
-        Logger.info(String.format("Engine was started after %d milliseconds", timeFromStart));
     }
 
     private void mouseScroll() {

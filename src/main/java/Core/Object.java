@@ -2,11 +2,9 @@ package Core;
 
 import Asset.Model;
 import org.joml.*;
-import org.lwjgl.BufferUtils;
 
 import java.awt.image.BufferedImage;
 import java.lang.Math;
-import java.nio.FloatBuffer;
 
 public final class Object {
     public String name;
@@ -16,7 +14,6 @@ public final class Object {
     public Vector3f color;
 
     private Matrix4f modelMatrix;
-    public final FloatBuffer modelMatrixBuffer = BufferUtils.createFloatBuffer(16);
 
     public final Model model;
 
@@ -53,8 +50,5 @@ public final class Object {
         float angleZ = (float) Math.toRadians(rot.z);
 
         modelMatrix = new Matrix4f().translate(pos).rotateX(angleX).rotateY(angleY).rotateZ(angleZ).scale(size);
-        modelMatrix.get(modelMatrixBuffer);
     }
-
-
 }

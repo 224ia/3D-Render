@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 public final class SoftwareInput extends Input implements KeyListener {
     private final boolean[] keys = new boolean[Keys.values().length];
 
@@ -13,8 +15,20 @@ public final class SoftwareInput extends Input implements KeyListener {
         frame.addKeyListener(this);
     }
 
-    public boolean isKeyPressed(Keys key) {
-        return keys[key.getIndex()];
+    public boolean isKeyPressed(int key) {
+        return keys[findKey(key)];
+    }
+
+    private int findKey(int key) {
+        return switch (key) {
+            case GLFW_KEY_W -> 0;
+            case GLFW_KEY_S -> 1;
+            case GLFW_KEY_A -> 2;
+            case GLFW_KEY_D -> 3;
+            case GLFW_KEY_Q -> 4;
+            case GLFW_KEY_E -> 5;
+            default -> -1;
+        };
     }
 
     @Override

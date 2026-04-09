@@ -7,7 +7,7 @@ public final class Logger {
     private static final DateTimeFormatter TIME_FORMAT =
             DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
-    private static boolean debugMode = false;
+    private static boolean debugMode = true;
 
     public static void setDebugMode(boolean enabled) {
         debugMode = enabled;

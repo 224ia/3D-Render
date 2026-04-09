@@ -7,6 +7,7 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ToDoubleFunction;
 
 public class Clipping {
     private static Vector4f planePoint;
@@ -62,31 +63,66 @@ public class Clipping {
     }
 
     public static List<RenderPolygon> projectClip(List<RenderPolygon> polygons) {
-        List<RenderPolygon> Q = new ArrayList<>(polygons);
-        for (int x = 0; x < 4; x++)
-        {
-            List<RenderPolygon> temp = new ArrayList<>();
-            for (RenderPolygon t : Q) {
-                List<RenderPolygon> new_t;
-                switch (x) {
-                    case 0:
-                        Clipping.setPlane(new Vector4f(0, -1, 0, 1), new Vector4f(0, 1, 0, 0));
-                        break;
-                    case 1:
-                        Clipping.setPlane(new Vector4f(0, 1, 0, 1), new Vector4f(0, -1, 0, 0));
-                        break;
-                    case 2:
-                        Clipping.setPlane(new Vector4f(-1, 0, 0, 1), new Vector4f(1, 0, 0, 0));
-                        break;
-                    case 3:
-                        Clipping.setPlane(new Vector4f(1, 0, 0, 1), new Vector4f(-1, 0, 0, 0));
-                        break;
-                }
-                new_t = Clipping.clipTriangle(t);
-                temp.addAll(new_t);
+        List<RenderPolygon> result = new ArrayList<>();
+        for (RenderPolygon polygon : polygons) {
+            List<Vertic> clipped = new ArrayList<>(List.of(polygon.v0, polygon.v1, polygon.v2));
+            clipped = clipPolygon(clipped, v -> v.pos.x + v.pos.w);
+            clipped = clipPolygon(clipped, v -> v.pos.w - v.pos.x);
+            clipped = clipPolygon(clipped, v -> v.pos.y + v.pos.w);
+            clipped = clipPolygon(clipped, v -> v.pos.w - v.pos.y);
+
+            if (clipped.size() < 3) {
+                continue;
             }
-            Q = temp;
+
+            Vertic first = clipped.getFirst();
+            for (int i = 1; i < clipped.size() - 1; i++) {
+                result.add(new RenderPolygon(first, clipped.get(i), clipped.get(i + 1),
+                        polygon.normal, polygon.texture, polygon.color));
+            }
         }
-        return Q;
+        return result;
+    }
+
+    private static List<Vertic> clipPolygon(List<Vertic> polygon, ToDoubleFunction<Vertic> distanceFunction) {
+        if (polygon.isEmpty()) {
+            return polygon;
+        }
+
+        List<Vertic> clipped = new ArrayList<>();
+        Vertic previous = polygon.getLast();
+        double previousDistance = distanceFunction.applyAsDouble(previous);
+
+        for (Vertic current : polygon) {
+            double currentDistance = distanceFunction.applyAsDouble(current);
+            boolean previousInside = previousDistance >= 0.0;
+            boolean currentInside = currentDistance >= 0.0;
+
+            if (previousInside && currentInside) {
+                clipped.add(current);
+            } else if (previousInside) {
+                clipped.add(interpolate(previous, current, previousDistance, currentDistance));
+            } else if (currentInside) {
+                clipped.add(interpolate(previous, current, previousDistance, currentDistance));
+                clipped.add(current);
+            }
+
+            previous = current;
+            previousDistance = currentDistance;
+        }
+
+        return clipped;
+    }
+
+    private static Vertic interpolate(Vertic from, Vertic to, double fromDistance, double toDistance) {
+        float t = (float) (fromDistance / (fromDistance - toDistance));
+        Vector4f pos = new Vector4f(from.pos).lerp(to.pos, t);
+
+        Vector2f uv = null;
+        if (from.uv != null && to.uv != null) {
+            uv = new Vector2f(from.uv).lerp(to.uv, t);
+        }
+
+        return new Vertic(pos, uv);
     }
 }

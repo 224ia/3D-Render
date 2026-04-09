@@ -1,13 +1,10 @@
 package Core;
 
-import Geometry.RenderPolygon;
 import Rendering.Renderer;
 import Util.Logger;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public final class Scene {
     private final ArrayList<Object> objects = new ArrayList<>();
@@ -33,14 +30,5 @@ public final class Scene {
         } else {
             Logger.warn("Object can't be added to scene since it is null");
         }
-    }
-
-    public List<RenderPolygon> setRenderPolygons() {
-        Matrix4f view = camera.update();
-        List<RenderPolygon> renderPolygons = new ArrayList<>();
-        for(Object obj : objects) {
-        }
-
-        return renderPolygons;
     }
 }
