@@ -3,13 +3,13 @@ package Util;
 public final class FpsCounter {
     private static long startTime = -1;
     private static int frames = 0;
-    private static float changeTime = 0;
-    private static final float FPS_UPDATE_TIME = 0.4f;
+    private static double changeTime = 0;
+    private static final float FPS_UPDATE_RATE = 0.4f;
 
-    private static float deltaTime;
+    private static double deltaTime;
     private static int fps;
 
-    public static float getDeltaTime() {
+    public static double getDeltaTime() {
         return deltaTime;
     }
 
@@ -30,11 +30,11 @@ public final class FpsCounter {
 
     public static void fpsCount() {
         long now = System.nanoTime();
-        deltaTime = (now - startTime) / 1_000_000_000f;
+        deltaTime = (now - startTime) / 1_000_000_000d;
         changeTime += deltaTime;
         frames += 1;
         startTime = now;
-        if (changeTime >= FPS_UPDATE_TIME) {
+        if (changeTime >= FPS_UPDATE_RATE) {
             fps = (int) (frames / changeTime);
             changeTime = 0;
             frames = 0;

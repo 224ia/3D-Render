@@ -48,7 +48,6 @@ void main() {
     for (Object object : objects) {
         scene.addObject(object);
     }
-    scene.addObject(null);
 
     engine.start(this::update);
 }

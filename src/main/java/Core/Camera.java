@@ -41,7 +41,7 @@ public final class Camera {
         view.get3x3(dirMat).invert();
         dir.mul(dirMat);
 
-        float deltaSpeed = speed * FpsCounter.getDeltaTime();
+        float deltaSpeed = (float) (speed * FpsCounter.getDeltaTime());
         pos.add(dir.mul(deltaSpeed));
 
         if (input.isKeyPressed(Keys.Q)) pos.y += deltaSpeed;
