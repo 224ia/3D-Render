@@ -6,6 +6,9 @@ import Input.MouseProcessing;
 import Util.FpsCounter;
 import Util.Logger;
 import org.joml.*;
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
 
 public final class Camera {
     private final Vector3f pos;
@@ -15,7 +18,14 @@ public final class Camera {
 
     private final Matrix3f dirMat = new Matrix3f();
 
+    private Matrix4f viewMatrix;
+    public final FloatBuffer viewMatrixBuffer = BufferUtils.createFloatBuffer(16);
+
     public float speed;
+
+    public Matrix4f getViewMatrix() {
+        return viewMatrix;
+    }
 
     public Camera(Vector3f pos, Input input, MouseProcessing mouse, float speed) {
         this.pos = pos;
@@ -26,8 +36,8 @@ public final class Camera {
         Logger.info("Camera was created");
     }
 
-    public Matrix4f update() {
-        Matrix4f view = new Matrix4f().rotateX(-mouse.getPitch()).rotateY(-mouse.getYaw());
+    public void update() {
+        viewMatrix = new Matrix4f().rotateX(-mouse.getPitch()).rotateY(-mouse.getYaw());
 
         Vector3f dir = new Vector3f(0, 0, 0);
 
@@ -38,7 +48,7 @@ public final class Camera {
 
         if (dir.length() > 0) dir.normalize();
 
-        view.get3x3(dirMat).invert();
+        viewMatrix.get3x3(dirMat).invert();
         dir.mul(dirMat);
 
         float deltaSpeed = (float) (speed * FpsCounter.getDeltaTime());
@@ -47,6 +57,7 @@ public final class Camera {
         if (input.isKeyPressed(Keys.Q)) pos.y += deltaSpeed;
         if (input.isKeyPressed(Keys.E)) pos.y -= deltaSpeed;
 
-        return view.translate(-pos.x, -pos.y, -pos.z);
+        viewMatrix.translate(-pos.x, -pos.y, -pos.z);
+        viewMatrix.get(viewMatrixBuffer);
     }
 }

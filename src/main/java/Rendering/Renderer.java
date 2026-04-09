@@ -1,6 +1,7 @@
 package Rendering;
 
-import Geometry.RenderPolygon;
+import Core.Camera;
+import Core.Object;
 import Input.Input;
 import Input.MouseProcessing;
 import UI.UI;
@@ -31,7 +32,7 @@ public abstract class Renderer {
         ui.addElement(element);
     }
 
-    public abstract void render(List<RenderPolygon> renderPolygons, Projection projection);
+    public abstract void render(List<Object> objects, Camera camera, Projection projection);
 
     protected abstract void drawUI();
 }

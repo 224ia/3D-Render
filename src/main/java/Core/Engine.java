@@ -31,27 +31,19 @@ public final class Engine {
     public Engine(RendererType rendererType, int width, int height) {
         startTime = System.nanoTime();
 
-        this.renderer = createRenderer(rendererType, width, height);
+        this.renderer = rendererType.create(width, height);
 
         this.fov = BASE_FOV;
 
         projection = new Projection(width, height, (float) width / height, 0.1f, 1000f, fov);
 
-        ModelLoader.init();
+        ModelLoader.init(rendererType);
         TextureLoader.init();
 
         FpsCounter.start(System.nanoTime());
 
         long timeFromStart = (System.nanoTime() - startTime) / 1_000_000;
         Logger.info(String.format("Engine was created in %d milliseconds", timeFromStart));
-    }
-
-    private Renderer createRenderer(RendererType type, int width, int height) {
-        Renderer renderer = switch (type) {
-            case SOFTWARE -> new SoftwareRenderer(width, height);
-        };
-        Logger.info("Created " + type.name().toLowerCase() + " renderer");
-        return renderer;
     }
 
     public void addUIElement(UIElement element) {
@@ -98,8 +90,10 @@ public final class Engine {
 
     private void draw() {
         if (scene != null) {
-            List<RenderPolygon> renderPolygons = scene.setRenderPolygons();
-            renderer.render(renderPolygons, projection);
+            List<Object> objects = scene.getObjects();
+            Camera camera = scene.getCamera();
+            camera.update();
+            renderer.render(objects, camera, projection);
         }
     }
 }

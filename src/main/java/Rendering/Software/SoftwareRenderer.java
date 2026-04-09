@@ -1,18 +1,23 @@
 package Rendering.Software;
 
+import Asset.Software.SoftwareModel;
+import Core.Camera;
+import Core.Object;
+import Geometry.Polygon;
 import Geometry.RenderPolygon;
 import Geometry.Vertic;
 import Input.Software.SoftwareInput;
 import Input.Software.SoftwareMouse;
 import Rendering.Projection;
 import Rendering.Renderer;
-import Software.Frame;
 import UI.Software.SoftwareUI;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,12 +49,18 @@ public final class SoftwareRenderer extends Renderer {
     }
 
     @Override
-    public void render(List<RenderPolygon> renderPolygons, Projection projection) {
+    public void render(List<Object> objects, Camera camera, Projection projection) {
         g2.setColor(new Color(147, 147, 147, 255));
         g2.fillRect(0, 0, frame.WIDTH, frame.HEIGHT);
 
         Arrays.fill(pixels, 1f);
 
+        Matrix4f view = camera.getViewMatrix();
+
+        List<RenderPolygon> renderPolygons = new ArrayList<>();
+        for (Object object : objects) {
+            objectTranslation(object, view, renderPolygons);
+        }
         for (RenderPolygon polygon : renderPolygons) {
             Clipping.setPlane(new Vector4f(0, 0, 0.2f, 1), new Vector4f(0, 0, 1, 0));
             List<RenderPolygon> clippedByZ = Clipping.clipTriangle(polygon);
@@ -77,6 +88,31 @@ public final class SoftwareRenderer extends Renderer {
 
         if (ui != null) drawUI();
         frame.updateImage(image);
+    }
+
+    public void objectTranslation(Object object, Matrix4f view, List<RenderPolygon> renderPolygons) {
+        Matrix4f mvp = new Matrix4f(view).mul(object.getModelMatrix());
+
+        if (object.model instanceof SoftwareModel model) {
+            for (Polygon polygon : model.getPolygons()) {
+                Vertic v0 = new Vertic(polygon.vertices[0]);
+                Vertic v1 = new Vertic(polygon.vertices[1]);
+                Vertic v2 = new Vertic(polygon.vertices[2]);
+
+                v0.pos.mul(mvp);
+                v1.pos.mul(mvp);
+                v2.pos.mul(mvp);
+
+                Vector4f normal = new Vector4f(polygon.normal, 0);
+                normal.mul(mvp);
+                normal.normalize();
+
+                Vector4f diff = new Vector4f(v0.pos).add(v1.pos).add(v2.pos).div(3);
+                if (diff.dot(normal) <= 0) {
+                    renderPolygons.add(new RenderPolygon(v0, v1, v2, normal, object.texture, object.color));
+                }
+            }
+        }
     }
 
     public void projectVertices(Graphics2D g2, RenderPolygon polygon, Projection projection) {

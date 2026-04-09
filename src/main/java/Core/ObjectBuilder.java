@@ -77,6 +77,6 @@ public final class ObjectBuilder {
     }
 
     public Object build() {
-        return new Object(name, pos, rot, size, color, model.getPolygons(), texture);
+        return new Object(name, pos, rot, size, color, model, texture);
     }
 }

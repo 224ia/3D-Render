@@ -18,6 +18,10 @@ public final class Scene {
         Logger.info("Scene was created");
     }
 
+    public ArrayList<Object> getObjects() {
+        return objects;
+    }
+
     public Camera getCamera() {
         return camera;
     }
@@ -35,7 +39,6 @@ public final class Scene {
         Matrix4f view = camera.update();
         List<RenderPolygon> renderPolygons = new ArrayList<>();
         for(Object obj : objects) {
-            obj.render(view, renderPolygons);
         }
 
         return renderPolygons;
