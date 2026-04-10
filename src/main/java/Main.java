@@ -14,7 +14,7 @@ import java.util.List;
 public static final int WIDTH = 1920;
 public static final int HEIGHT = 1080;
 
-private final Engine engine = new Engine(RendererType.SOFTWARE, WIDTH, HEIGHT);
+private final Engine engine = new Engine(RendererType.OPEN_GL, WIDTH, HEIGHT);
 
 private final UITextLabel text = UIBuilder.createTextLabel(760, 980, 400, 100,
         new Color(1f, 1f, 1f, 0.5f), "Some text", new Color(0f, 0f, 0f, 1f), 50);
@@ -34,22 +34,28 @@ void main() {
 
     engine.setScene(5f);
     Scene scene = engine.getScene();
-    scene.setLight(0, 0, -1);
+    scene.setLight(0, -1, 1);
 
     // Create objects using ObjectBuilder. All parameters have default values so they are optional
     // See ObjectBuilder class for available methods
     // Test Objects
-    objects.add(new ObjectBuilder().position(-8, 3, 5).rotation(0, 80, 180)
-            .color(0.9f).model("TextureTest").texture("Wall").build()); // All parameters used
-    objects.add(new ObjectBuilder().model("Player").position(5, 0, -5).texture("Background").build()); // Some parameters not used
-    objects.add(new ObjectBuilder().build()); // No parameters used
-    objects.add(new ObjectBuilder().model("sdas").texture("qsesa").position(0, -10, 10).build()); // Wrong names used
-    objects.add(new ObjectBuilder().model("Gun").texture("Wall").position(10, 10, -10).rotation(180, 0, 0).color(0.7f, 0.3f, 0.5f).build());
+//    objects.add(new ObjectBuilder().position(-8, 3, 5).rotation(0, 80, 180)
+//            .color(0.9f).model("TextureTest").texture("Wall").build()); // All parameters used
+//    objects.add(new ObjectBuilder().model("Player").position(5, 0, -5).texture("Background").build()); // Some parameters not used
+//    objects.add(new ObjectBuilder().build()); // No parameters used
+//    objects.add(new ObjectBuilder().model("sdas").texture("qsesa").position(0, -10, 10).build()); // Wrong names used
+//    objects.add(new ObjectBuilder().model("Gun").texture("Wall").position(10, 10, -10).rotation(180, 0, 0).color(0.7f, 0.3f, 0.5f).build());
 
-    objects.add(new ObjectBuilder()
-            .model("Gun")
-            .position(0, 2, -10).rotation(0, 180, 0)
-            .build());
+    // Test scene
+    objects.add(new ObjectBuilder().model("Ground").texture("Stone").size(0.1f).build());
+    objects.add(new ObjectBuilder().model("Wall1").texture("Wall").size(0.1f).build());
+    objects.add(new ObjectBuilder().model("Wall2").texture("Wall").size(0.1f).build());
+    objects.add(new ObjectBuilder().model("Wall3").texture("Wall").size(0.1f).build());
+    objects.add(new ObjectBuilder().model("Wall4").texture("Wall").size(0.1f).build());
+    objects.add(new ObjectBuilder().model("WeirdCube1").texture("Wood").size(0.1f).build());
+    objects.add(new ObjectBuilder().model("WeirdCube2").texture("Wood").size(0.1f).build());
+    objects.add(new ObjectBuilder().model("WeirdCube3").texture("Wood").size(0.1f).build());
+    objects.add(new ObjectBuilder().model("SuperWeirdSphere").texture("Gift").size(0.1f).build());
 
     for (Object object : objects) {
         scene.addObject(object);
@@ -64,6 +70,6 @@ void update() {
     Logger.debug(FpsCounter.getFps() + "");
 
     for (Object object : objects) {
-//        object.rotate(1f, 0, 1f);
+        object.rotate(1f, 0, 1f);
     }
 }
