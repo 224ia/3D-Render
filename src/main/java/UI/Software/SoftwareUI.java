@@ -18,7 +18,7 @@ public class SoftwareUI extends UI {
     public void draw() {
         for (UIElement element : elements) {
             g2.setColor(element.bgColor);
-            g2.fillRect(element.x, element.y, element.width, element.height);
+            g2.fillRect((int) element.x, (int) element.y, (int) element.width, (int) element.height);
             switch (element) {
                 case UITextLabel label -> {
                     Font font = new Font("Arial", Font.PLAIN, label.textSize);
@@ -28,8 +28,8 @@ public class SoftwareUI extends UI {
                     int textHeight = fm.getHeight();
                     int ascent = fm.getAscent();
 
-                    int textX = element.x + (element.width - textWidth) / 2;
-                    int textY = element.y + (element.height - textHeight) / 2 + ascent;
+                    int textX = (int) (element.x + (element.width - textWidth) / 2);
+                    int textY = (int) (element.y + (element.height - textHeight) / 2 + ascent);
 
                     g2.setColor(label.textColor);
                     g2.setFont(font);

@@ -104,7 +104,7 @@ public final class Engine {
             List<Object> objects = scene.getObjects();
             Camera camera = scene.getCamera();
             camera.update();
-            renderer.render(objects, camera, projection);
+            renderer.render(objects, camera, scene.getLight(), projection);
         }
     }
 }

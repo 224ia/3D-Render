@@ -18,6 +18,14 @@ public class ShaderProcessing {
     private long window = -1;
     private int shaderProgram;
 
+    /**
+     * Reuse an already-created GLFW window + current OpenGL context.
+     * Intended for auxiliary pipelines (e.g., UI shaders) that must not create a new window.
+     */
+    public void useExistingWindow(long window) {
+        this.window = window;
+    }
+
     public long getWindow() {
         return window;
     }
@@ -26,11 +34,11 @@ public class ShaderProcessing {
         return shaderProgram;
     }
 
-    public void init(int width, int height) {
+    public void init(int width, int height, String shaderPackagePath) {
         if (window == -1) {
             initGLFW(width, height);
             initOpenGL(width, height);
-            loadShader();
+            loadShader(shaderPackagePath);
             return;
         }
         Logger.warn("Shaders have already been initialized");
@@ -71,7 +79,7 @@ public class ShaderProcessing {
     private String readShader(String filename) {
         try {
             InputStream is = getClass().getClassLoader()
-                    .getResourceAsStream("Shaders/" + filename);
+                    .getResourceAsStream(filename);
             if (is == null) {
                 Logger.error("File not found: " + filename);
                 return "";
@@ -95,30 +103,27 @@ public class ShaderProcessing {
         return shader;
     }
 
-    public void loadShader() {
-        if (window != -1) {
-            String vertexSource = readShader("Vertex.vert");
-            String fragmentSource = readShader("Fragment.frag");
-
-            if (vertexSource.isEmpty() || fragmentSource.isEmpty()) {
-                throw new RuntimeException("Failed to load shaders");
-            }
-
-            int vertexShader = compileShader(vertexSource, GL_VERTEX_SHADER);
-            int fragmentShader = compileShader(fragmentSource, GL_FRAGMENT_SHADER);
-
-            shaderProgram = glCreateProgram();
-            glAttachShader(shaderProgram, vertexShader);
-            glAttachShader(shaderProgram, fragmentShader);
-            glLinkProgram(shaderProgram);
-
-            if (glGetProgrami(shaderProgram, GL_LINK_STATUS) == GL_FALSE) {
-                String log = glGetProgramInfoLog(shaderProgram);
-                throw new RuntimeException("Shader linking failed: " + log);
-            }
-
-            glDeleteShader(vertexShader);
-            glDeleteShader(fragmentShader);
+    public void loadShader(String shaderPackagePath) {
+        String vertexSource = readShader(shaderPackagePath + "Vertex.vert");
+        String fragmentSource = readShader(shaderPackagePath + "Fragment.frag");
+        if (vertexSource.isEmpty() || fragmentSource.isEmpty()) {
+            throw new RuntimeException("Failed to load shaders");
         }
+
+        int vertexShader = compileShader(vertexSource, GL_VERTEX_SHADER);
+        int fragmentShader = compileShader(fragmentSource, GL_FRAGMENT_SHADER);
+
+        shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+
+        if (glGetProgrami(shaderProgram, GL_LINK_STATUS) == GL_FALSE) {
+            String log = glGetProgramInfoLog(shaderProgram);
+            throw new RuntimeException("Shader linking failed: " + log);
+        }
+
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
     }
 }

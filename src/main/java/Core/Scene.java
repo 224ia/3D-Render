@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public final class Scene {
     private final ArrayList<Object> objects = new ArrayList<>();
+    private final Vector3f lightDir = new Vector3f(0, 0, 1);
     private final Camera camera;
 
     public Scene(Renderer renderer, float cameraSpeed) {
@@ -15,8 +16,16 @@ public final class Scene {
         Logger.info("Scene was created");
     }
 
+    public void setLight(float x, float y, float z) {
+        lightDir.set(x, y, z);
+    }
+
     public ArrayList<Object> getObjects() {
         return objects;
+    }
+
+    public Vector3f getLight() {
+        return lightDir;
     }
 
     public Camera getCamera() {

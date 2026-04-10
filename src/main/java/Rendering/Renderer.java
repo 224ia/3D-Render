@@ -6,6 +6,8 @@ import Input.Input;
 import Input.MouseProcessing;
 import UI.UI;
 import UI.UIElement;
+import Util.Logger;
+import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -29,10 +31,18 @@ public abstract class Renderer {
     }
 
     public void addUIElement(UIElement element) {
-        ui.addElement(element);
+        if (ui != null) {
+            ui.addElement(element);
+        } else {
+            Logger.error("UI wasn't created");
+        }
     }
 
-    public abstract void render(List<Object> objects, Camera camera, Projection projection);
+    public abstract void render(List<Object> objects, Camera camera, Vector3f lightDir, Projection projection);
 
-    protected abstract void drawUI();
+    protected void drawUI() {
+        if (ui != null) {
+            ui.draw();
+        }
+    }
 }

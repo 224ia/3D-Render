@@ -7,9 +7,6 @@ layout (location = 2) in vec2 aTexCoord;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 mvp;
-uniform bool useClipSpace;
-uniform bool useDebugModelSpace;
 
 out vec2 TexCoord;
 out vec3 Normal;

@@ -14,7 +14,7 @@ import java.util.List;
 public static final int WIDTH = 1920;
 public static final int HEIGHT = 1080;
 
-private final Engine engine = new Engine(RendererType.OPEN_GL, WIDTH, HEIGHT);
+private final Engine engine = new Engine(RendererType.SOFTWARE, WIDTH, HEIGHT);
 
 private final UITextLabel text = UIBuilder.createTextLabel(760, 980, 400, 100,
         new Color(1f, 1f, 1f, 0.5f), "Some text", new Color(0f, 0f, 0f, 1f), 50);
@@ -28,12 +28,13 @@ private final List<Object> objects = new ArrayList<>();
 void main() {
     Logger.setDebugMode(true); // The logger has the ability to output some information only in debug mode
 
-//    engine.addUIElement(text);
-//    engine.addUIElement(fovText);
-//    engine.addUIElement(fpsText);
+    engine.addUIElement(text);
+    engine.addUIElement(fovText);
+    engine.addUIElement(fpsText);
 
     engine.setScene(5f);
     Scene scene = engine.getScene();
+    scene.setLight(0, 0, -1);
 
     // Create objects using ObjectBuilder. All parameters have default values so they are optional
     // See ObjectBuilder class for available methods
@@ -60,8 +61,9 @@ void main() {
 void update() {
     fovText.text = "FOV: " + engine.getFov();
     fpsText.text = "FPS: " + FpsCounter.getFps();
+    Logger.debug(FpsCounter.getFps() + "");
 
     for (Object object : objects) {
-        object.rotate(0.1f, 0, 0.1f);
+//        object.rotate(1f, 0, 1f);
     }
 }

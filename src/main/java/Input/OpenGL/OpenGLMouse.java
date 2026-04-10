@@ -15,7 +15,7 @@ public class OpenGLMouse extends MouseProcessing {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         glfwSetScrollCallback(window, (_, _, yOffset) ->
-                scroll = (int) Math.clamp(scroll + yOffset / 3.5f, 1f, 4f));
+                scroll = (int) -yOffset);
 
         glfwSetCursorPosCallback(window, (_, xPos, yPos) -> {
             if (firstMouseInput) {

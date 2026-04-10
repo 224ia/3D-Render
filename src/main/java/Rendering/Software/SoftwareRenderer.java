@@ -49,7 +49,7 @@ public final class SoftwareRenderer extends Renderer {
     }
 
     @Override
-    public void render(List<Object> objects, Camera camera, Projection projection) {
+    public void render(List<Object> objects, Camera camera, Vector3f lightDir, Projection projection) {
         g2.setColor(new Color(147, 147, 147, 255));
         g2.fillRect(0, 0, frame.WIDTH, frame.HEIGHT);
 
@@ -62,10 +62,11 @@ public final class SoftwareRenderer extends Renderer {
             objectTranslation(object, view, renderPolygons);
         }
         for (RenderPolygon polygon : renderPolygons) {
-            projectVertices(g2, polygon, projection);
+            projectVertices(g2, polygon, lightDir, projection);
         }
 
-        if (ui != null) drawUI();
+        drawUI();
+
         frame.updateImage(image);
     }
 
@@ -94,7 +95,7 @@ public final class SoftwareRenderer extends Renderer {
         }
     }
 
-    public void projectVertices(Graphics2D g2, RenderPolygon polygon, Projection projection) {
+    public void projectVertices(Graphics2D g2, RenderPolygon polygon, Vector3f lightDir, Projection projection) {
         if (polygon.v0.pos.z <= 0 || polygon.v1.pos.z <= 0 || polygon.v2.pos.z <= 0) return;
 
         projection.project(polygon.v0.pos);
@@ -105,8 +106,8 @@ public final class SoftwareRenderer extends Renderer {
         projection.toScreen(polygon.v1.pos);
         projection.toScreen(polygon.v2.pos);
 
-        Vector4f lightDir = new Vector4f(1, 1, 1, 0).normalize();
-        float dot = polygon.normal.dot(lightDir.negate()) * 0.5f + 0.5f;
+        Vector4f light = new Vector4f(lightDir, 0).normalize();
+        float dot = polygon.normal.dot(light.negate()) * 0.5f + 0.5f;
 
         drawTriangleBarycentric(g2, polygon.v0, polygon.v1, polygon.v2, polygon.texture, polygon.color, dot);
     }
@@ -187,10 +188,5 @@ public final class SoftwareRenderer extends Renderer {
 
     private float edgeFunction(Vector4f v0, Vector4f v1, float x, float y) {
         return (x - v0.x) * (v1.y - v0.y) - (y - v0.y) * (v1.x - v0.x);
-    }
-
-    @Override
-    protected void drawUI() {
-        ui.draw();
     }
 }
