@@ -20,12 +20,18 @@ public class ModelLoader {
     public static final List<Model> models = new ArrayList<>();
     private static Model defaultModel;
 
+    private static String curPackage = "";
+
+    public static void setCurPackage(String curPackage) {
+        ModelLoader.curPackage = curPackage;
+    }
+
     public static void init(RendererType rendererType) {
         ModelLoader.rendererType = rendererType;
         if (models.isEmpty()) {
-            File folder = new File(MODEL_FOLDER_PATH);
+            File folder = new File(MODEL_FOLDER_PATH + curPackage + "/");
             if (folder.exists() && folder.isDirectory()) {
-                File base = new File(MODEL_FOLDER_PATH, DEFAULT_MODEL_PATH);
+                File base = new File(MODEL_FOLDER_PATH + curPackage + "/", DEFAULT_MODEL_PATH);
                 if (base.exists()) {
                     String name = base.getName().replace(".obj", "");
                     defaultModel = loadModel(DEFAULT_MODEL_PATH, name);
@@ -54,7 +60,7 @@ public class ModelLoader {
         ArrayList<Float> uvs = new ArrayList<>();
         ArrayList<Integer> polygons = new ArrayList<>();
         try {
-            List<String> lines = Files.readAllLines(Paths.get(MODEL_FOLDER_PATH + path));
+            List<String> lines = Files.readAllLines(Paths.get(MODEL_FOLDER_PATH + curPackage + "/" + path));
             for (String line : lines) {
                 String[] parts = line.split(" ");
                 switch (parts[0]) {

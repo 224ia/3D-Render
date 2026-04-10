@@ -36,6 +36,7 @@ public final class Engine {
 
         projection = new Projection(width, height, (float) width / height, 0.1f, 1000f, fov);
 
+        ModelLoader.setCurPackage("CoolScene"); // Simple multi packaging
         ModelLoader.init(rendererType);
         TextureLoader.init();
 
