@@ -9,67 +9,54 @@ import Util.FpsCounter;
 import Util.Logger;
 
 import java.awt.*;
-import java.util.List;
 
-public static final int WIDTH = 1920;
-public static final int HEIGHT = 1080;
+public class Main {
+    private UITextLabel fovText;
+    private UITextLabel fpsText;
 
-private final Engine engine = new Engine(RendererType.OPEN_GL, WIDTH, HEIGHT);
-
-private final UITextLabel text = UIBuilder.createTextLabel(760, 980, 400, 100,
-        new Color(1f, 1f, 1f, 0.5f), "Some text", new Color(0f, 0f, 0f, 1f), 50);
-private final UITextLabel fovText = UIBuilder.createTextLabel(0, 0, 400, 100,
-        new Color(1f, 1f, 1f, 0.5f), "FOV: 100", new Color(0f, 0f, 0f, 1f), 50);
-private final UITextLabel fpsText = UIBuilder.createTextLabel(0,200, 400, 100,
-        new Color(1f, 1f, 1f, 0.5f), "FPS: 60", new Color(0f, 0f, 0f, 1f), 50);
-
-private final List<Object> objects = new ArrayList<>();
-
-void main() {
-    Logger.setDebugMode(true); // The logger has the ability to output some information only in debug mode
-
-    engine.addUIElement(text);
-    engine.addUIElement(fovText);
-    engine.addUIElement(fpsText);
-
-    engine.setScene(5f);
-    Scene scene = engine.getScene();
-    scene.setLight(0, -1, 1);
-
-    // Create objects using ObjectBuilder. All parameters have default values so they are optional
-    // See ObjectBuilder class for available methods
-    // Test Objects
-//    objects.add(new ObjectBuilder().position(-8, 3, 5).rotation(0, 80, 180)
-//            .color(0.9f).model("TextureTest").texture("Wall").build()); // All parameters used
-//    objects.add(new ObjectBuilder().model("Player").position(5, 0, -5).texture("Background").build()); // Some parameters not used
-//    objects.add(new ObjectBuilder().build()); // No parameters used
-//    objects.add(new ObjectBuilder().model("sdas").texture("qsesa").position(0, -10, 10).build()); // Wrong names used
-//    objects.add(new ObjectBuilder().model("Gun").texture("Wall").position(10, 10, -10).rotation(180, 0, 0).color(0.7f, 0.3f, 0.5f).build());
-
-    // Test scene
-    objects.add(new ObjectBuilder().model("Ground").texture("Stone").size(0.1f).build());
-    objects.add(new ObjectBuilder().model("Wall1").texture("Wall").size(0.1f).build());
-    objects.add(new ObjectBuilder().model("Wall2").texture("Wall").size(0.1f).build());
-    objects.add(new ObjectBuilder().model("Wall3").texture("Wall").size(0.1f).build());
-    objects.add(new ObjectBuilder().model("Wall4").texture("Wall").size(0.1f).build());
-    objects.add(new ObjectBuilder().model("WeirdCube1").texture("Wood").size(0.1f).build());
-    objects.add(new ObjectBuilder().model("WeirdCube2").texture("Wood").size(0.1f).build());
-    objects.add(new ObjectBuilder().model("WeirdCube3").texture("Wood").size(0.1f).build());
-    objects.add(new ObjectBuilder().model("SuperWeirdSphere").texture("Gift").size(0.1f).build());
-
-    for (Object object : objects) {
-        scene.addObject(object);
+    void main() {
+        Logger.setDebugMode(true); // The logger has the ability to output some information only in debug mode
+        Engine.create(RendererType.OPEN_GL, 1920, 1080, 5f, Main.class);
     }
 
-    engine.start(this::update);
-}
+    // init() - method invoked after Engine is created but before Engine starts
+    private void init() {
+        Scene scene = Engine.getScene();
+        scene.setLight(0, -1, 1);
 
-void update() {
-    fovText.text = "FOV: " + engine.getFov();
-    fpsText.text = "FPS: " + FpsCounter.getFps();
-    Logger.debug(FpsCounter.getFps() + "");
+        // Create objects using ObjectBuilder. All parameters have default values so they are optional
+        // See ObjectBuilder class for available methods
+        // Test scene
+        scene.addObject(new ObjectBuilder().model("Ground").texture("Stone").size(0.1f).build());
+        scene.addObject(new ObjectBuilder().model("Wall1").texture("Wall").size(0.1f).build());
+        scene.addObject(new ObjectBuilder().model("Wall2").texture("Wall").size(0.1f).build());
+        scene.addObject(new ObjectBuilder().model("Wall3").texture("Wall").size(0.1f).build());
+        scene.addObject(new ObjectBuilder().model("Wall4").texture("Wall").size(0.1f).build());
+        scene.addObject(new ObjectBuilder().model("WeirdCube1").texture("Wood").size(0.1f).build());
+        scene.addObject(new ObjectBuilder().model("WeirdCube2").texture("Wood").size(0.1f).build());
+        scene.addObject(new ObjectBuilder().model("WeirdCube3").texture("Wood").size(0.1f).build());
+        scene.addObject(new ObjectBuilder().model("SuperWeirdSphere").texture("Gift").size(0.1f).build());
 
-    for (Object object : objects) {
-        object.rotate(1f, 0, 1f);
+        UITextLabel text = UIBuilder.createTextLabel(760, 980, 400, 100,
+                new Color(1f, 1f, 1f, 0.5f), "Some text", new Color(0f, 0f, 0f, 1f), 50);
+        fovText = UIBuilder.createTextLabel(0, 0, 400, 100,
+                new Color(1f, 1f, 1f, 0.5f), "FOV: 100", new Color(0f, 0f, 0f, 1f), 50);
+        fpsText = UIBuilder.createTextLabel(0, 200, 400, 100,
+                new Color(1f, 1f, 1f, 0.5f), "FPS: 60", new Color(0f, 0f, 0f, 1f), 50);
+
+        Engine.addUIElement(text);
+        Engine.addUIElement(fovText);
+        Engine.addUIElement(fpsText);
+    }
+
+    // update() - method invoked every frame
+    private void update() {
+        fovText.text = "FOV: " + Engine.getFov();
+        fpsText.text = "FPS: " + FpsCounter.getFps();
+        Logger.debug(FpsCounter.getFps() + "");
+
+        for (Object object : Engine.getScene().getObjects()) {
+//        object.rotate(1f, 0, 1f);
+        }
     }
 }

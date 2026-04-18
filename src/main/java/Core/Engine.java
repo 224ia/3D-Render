@@ -12,27 +12,34 @@ import Util.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public final class Engine {
-    private final Renderer renderer;
-    private Scene scene;
+    private static Renderer renderer;
+    private static Scene scene;
 
-    public final Projection projection;
+    public static Projection projection;
 
-    private int fov;
-    private final int BASE_FOV = 100;
-    private final int MIN_FOV = 30;
-    private final int MAX_FOV = 150;
+    private static int fov;
+    private static final int BASE_FOV = 100;
+    private static final int MIN_FOV = 30;
+    private static final int MAX_FOV = 150;
 
-    private final long startTime;
+    private static long startTime;
 
-    public Engine(RendererType rendererType, int width, int height) {
+    private static java.lang.Object mainClassInstance;
+    private static Method initMethod;
+    private static Method updateMethod;
+
+    public static void create(RendererType rendererType, int width, int height, float cameraSpeed, Class<?> mainClass) {
         startTime = System.nanoTime();
 
-        this.renderer = rendererType.create(width, height);
+        renderer = rendererType.create(width, height);
 
-        this.fov = BASE_FOV;
+        fov = BASE_FOV;
 
         projection = new Projection(width, height, (float) width / height, 0.1f, 1000f, fov);
 
@@ -40,54 +47,79 @@ public final class Engine {
         ModelLoader.init(rendererType);
         TextureLoader.init();
 
+        setScene(cameraSpeed);
+
         FpsCounter.start(System.nanoTime());
 
         long timeFromStart = (System.nanoTime() - startTime) / 1_000_000;
         Logger.info(String.format("Engine was created in %d milliseconds", timeFromStart));
+
+        try {
+            Constructor<?> constructor = mainClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            mainClassInstance = constructor.newInstance();
+
+            initMethod = mainClass.getDeclaredMethod("init");
+            updateMethod = mainClass.getDeclaredMethod("update");
+
+            updateMethod.setAccessible(true);
+
+            if (initMethod != null) {
+                initMethod.setAccessible(true);
+                initMethod.invoke(mainClassInstance);
+            }
+        } catch (InvocationTargetException | IllegalAccessException
+                 | NoSuchMethodException | InstantiationException e) {
+            throw new RuntimeException("Failed to create engine", e);
+        }
+
+        Engine.start();
     }
 
-    public void addUIElement(UIElement element) {
+    public static void addUIElement(UIElement element) {
         renderer.addUIElement(element);
     }
 
-    public void setScene(float cameraSpeed) {
+    private static void setScene(float cameraSpeed) {
+        System.out.println(scene);
+        System.out.println(renderer);
         if (scene == null && renderer != null) {
             scene = new Scene(renderer, cameraSpeed);
         }
     }
 
-    public Scene getScene() {
+    public static Scene getScene() {
         return scene;
     }
 
-    public void start(Runnable updateFunction) {
+    private static void start() {
         long timeFromStart = (System.nanoTime() - startTime) / 1_000_000;
         Logger.info(String.format("Engine was started after %d milliseconds", timeFromStart));
 
         if (renderer instanceof OpenGLRenderer openGLRenderer) {
             while (!openGLRenderer.shouldClose()) {
-                mouseScroll();
-                draw();
-                FpsCounter.fpsCount();
-                if (updateFunction != null) {
-                    updateFunction.run();
-                }
+                loopIteration();
             }
-            return;
+        } else {
+            Timer timer = new Timer(1, _ -> loopIteration());
+            timer.start();
         }
-
-        Timer timer = new Timer(1, _ -> {
-            mouseScroll();
-            draw();
-            FpsCounter.fpsCount();
-            if (updateFunction != null) {
-                updateFunction.run();
-            }
-        });
-        timer.start();
     }
 
-    private void mouseScroll() {
+    private static void loopIteration() {
+        mouseScroll();
+        draw();
+        FpsCounter.fpsCount();
+        if (updateMethod != null) {
+            try {
+                updateMethod.invoke(mainClassInstance);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static void mouseScroll() {
         int scroll = scene.getCamera().mouse.getScroll();
         if ((scroll < 0 && fov > MIN_FOV) || (scroll > 0 && fov < MAX_FOV)) {
             fov += scroll * 3;
@@ -96,11 +128,11 @@ public final class Engine {
         }
     }
 
-    public int getFov() {
+    public static int getFov() {
         return fov;
     }
 
-    private void draw() {
+    private static void draw() {
         if (scene != null) {
             List<Object> objects = scene.getObjects();
             Camera camera = scene.getCamera();

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
+// Clipping doesn't work correctly
 public class Clipping {
     private static Vector4f planePoint;
     private static Vector4f planeNormal;

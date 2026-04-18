@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 public final class Logger {
     private static final DateTimeFormatter TIME_FORMAT =
-            DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+                DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
     private static boolean debugMode = true;
 
@@ -13,25 +13,41 @@ public final class Logger {
         debugMode = enabled;
     }
 
-    public static void info(String message) {
-        System.out.printf("[%s] [INFO] %s%n",
-                LocalTime.now().format(TIME_FORMAT), message);
+    private static void log(Object message, LogLevel logLevel) {
+        if (message == null || logLevel == null) {
+            throw new IllegalArgumentException("Message and log level can't be null");
+        }
+        System.out.printf("[%s] [%s] %s%n",
+                LocalTime.now().format(TIME_FORMAT), logLevel.levelName, message);
     }
 
-    public static void warn(String message) {
-        System.out.printf("[%s] [WARN] %s%n",
-                LocalTime.now().format(TIME_FORMAT), message);
+    public static void info(Object message) {
+        log(message, LogLevel.INFO);
     }
 
-    public static void error(String message) {
-        System.err.printf("[%s] [ERROR] %s%n",
-                LocalTime.now().format(TIME_FORMAT), message);
+    public static void warn(Object message) {
+        log(message, LogLevel.WARN);
     }
 
-    public static void debug(String message) {
+    public static void error(Object message) {
+        log(message, LogLevel.ERROR);
+    }
+
+    public static void debug(Object message) {
         if (debugMode) {
-            System.out.printf("[%s] [DEBUG] %s%n",
-                    LocalTime.now().format(TIME_FORMAT), message);
+            log(message, LogLevel.DEBUG);
+        }
+    }
+
+    private enum LogLevel {
+        INFO("Info"),
+        WARN("Warn"),
+        ERROR("Error"),
+        DEBUG("Debug");
+
+        private final String levelName;
+        LogLevel(String levelName) {
+            this.levelName = levelName;
         }
     }
 }
