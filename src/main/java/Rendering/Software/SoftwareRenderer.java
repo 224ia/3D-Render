@@ -49,6 +49,11 @@ public final class SoftwareRenderer extends Renderer {
     }
 
     @Override
+    public void changeWindowTitle(String title) {
+        frame.setTitle(title);
+    }
+
+    @Override
     public void render(List<Object> objects, Camera camera, Vector3f lightDir, Projection projection) {
         g2.setColor(new Color(147, 147, 147, 255));
         g2.fillRect(0, 0, frame.WIDTH, frame.HEIGHT);

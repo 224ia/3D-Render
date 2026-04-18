@@ -1,4 +1,4 @@
-package Asset;
+package Util;
 
 public final class Paths {
     public static final String RESOURCES_FOLDER_PATH = "src/main/resources/";
@@ -6,6 +6,8 @@ public final class Paths {
     public static final String MODEL_FOLDER_PATH = ASSETS_FOLDER_PATH + "Models/";
     public static final String TEXTURES_FOLDER_PATH = ASSETS_FOLDER_PATH + "Textures/";
     public static final String DEFAULT_MODEL_PATH = "DefaultModel/DefaultModel.obj";
+
+    public static final String LOG_FILE_PATH = "log.txt";
 
     private Paths() {}
 }

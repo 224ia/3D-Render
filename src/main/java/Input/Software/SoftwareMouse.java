@@ -1,6 +1,7 @@
 package Input.Software;
 
 import Input.MouseProcessing;
+import Util.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,7 @@ public final class SoftwareMouse extends MouseProcessing implements MouseMotionL
         try {
             robot = new Robot();
         } catch (AWTException e) {
-            e.printStackTrace();
+            Logger.error("Error with creating robot", e);
         }
 
         frame.addKeyListener(new KeyAdapter() {

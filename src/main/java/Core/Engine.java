@@ -70,6 +70,7 @@ public final class Engine {
             }
         } catch (InvocationTargetException | IllegalAccessException
                  | NoSuchMethodException | InstantiationException e) {
+            Logger.error("Failed to get or invoke methods from Main class", e);
             throw new RuntimeException("Failed to create engine", e);
         }
 
@@ -81,8 +82,6 @@ public final class Engine {
     }
 
     private static void setScene(float cameraSpeed) {
-        System.out.println(scene);
-        System.out.println(renderer);
         if (scene == null && renderer != null) {
             scene = new Scene(renderer, cameraSpeed);
         }
@@ -90,6 +89,13 @@ public final class Engine {
 
     public static Scene getScene() {
         return scene;
+    }
+
+    public static void changeWindowTitle(String title) {
+        if (title == null) {
+            Logger.error("Title can't be null");
+        }
+        renderer.changeWindowTitle(title);
     }
 
     private static void start() {

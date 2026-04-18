@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Asset.Paths.*;
+import static Util.Paths.*;
 
 public class ModelLoader {
     private static RendererType rendererType;
@@ -91,7 +91,7 @@ public class ModelLoader {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("Failed to load model: ", e);
         }
 
         return switch (rendererType) {

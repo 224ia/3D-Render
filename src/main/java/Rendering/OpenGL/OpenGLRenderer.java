@@ -13,9 +13,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -62,6 +60,11 @@ public class OpenGLRenderer extends Renderer {
 
     public boolean shouldClose() {
         return glfwWindowShouldClose(window);
+    }
+
+    @Override
+    public void changeWindowTitle(String title) {
+        glfwSetWindowTitle(window, title);
     }
 
     @Override

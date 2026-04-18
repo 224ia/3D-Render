@@ -38,6 +38,8 @@ public abstract class Renderer {
         }
     }
 
+    public abstract void changeWindowTitle(String title);
+
     public abstract void render(List<Object> objects, Camera camera, Vector3f lightDir, Projection projection);
 
     protected void drawUI() {

@@ -1,9 +1,25 @@
 package Util;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public final class Logger {
+    private static final Path LOG_FILE_PATH = Path.of(Paths.LOG_FILE_PATH);
+    static {
+        try {
+            Files.writeString(LOG_FILE_PATH, "");
+        } catch (IOException e) {
+            System.err.println("Failed to create log file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     private static final DateTimeFormatter TIME_FORMAT =
                 DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
@@ -17,8 +33,22 @@ public final class Logger {
         if (message == null || logLevel == null) {
             throw new IllegalArgumentException("Message and log level can't be null");
         }
-        System.out.printf("[%s] [%s] %s%n",
+
+        String output = String.format("[%s] [%s] %s%n",
                 LocalTime.now().format(TIME_FORMAT), logLevel.levelName, message);
+
+        if (logLevel != LogLevel.ERROR) {
+            System.out.println(output);
+        } else {
+            System.err.println(output);
+        }
+
+        try {
+            Files.writeString(LOG_FILE_PATH, output, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            System.err.println("Failed to write into log file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public static void info(Object message) {
@@ -31,6 +61,12 @@ public final class Logger {
 
     public static void error(Object message) {
         log(message, LogLevel.ERROR);
+    }
+
+    public static void error(Object message, Throwable error) {
+        StringWriter writer = new StringWriter();
+        error.printStackTrace(new PrintWriter(writer));
+        log(message + " - " + writer, LogLevel.ERROR);
     }
 
     public static void debug(Object message) {

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Asset.Paths.*;
+import static Util.Paths.*;
 
 public class TextureLoader {
     public static final List<Texture> textures = new ArrayList<>();
@@ -27,7 +27,7 @@ public class TextureLoader {
                             textures.add(new Texture(name, image));
                             Logger.info("Loaded texture: " + name);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Logger.error("Failed to load texture: ", e);
                         }
                     }
                 }

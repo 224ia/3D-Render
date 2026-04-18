@@ -4,8 +4,10 @@ import Util.Logger;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -45,10 +47,18 @@ public class ShaderProcessing {
     }
 
     private void initGLFW(int width, int height) {
-        GLFWErrorCallback.createPrint(System.err).set();
+        ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(byteArray);
+        GLFWErrorCallback.createPrint(ps).set();
+
+        String errorLog = byteArray.toString();
+        if (!errorLog.isBlank()) {
+            Logger.error("GLFW error: " + errorLog);
+        }
 
         if (!glfwInit()) {
-            throw new IllegalStateException("Unable to initialize GLFW");
+            Logger.error("Unable to initialize GLFW");
+            throw new IllegalStateException();
         }
 
         glfwDefaultWindowHints();
@@ -60,7 +70,8 @@ public class ShaderProcessing {
 
         window = glfwCreateWindow(width, height, "OpenGL Rendering", NULL, NULL);
         if (window == NULL) {
-            throw new RuntimeException("Failed to create window");
+            Logger.error("Failed to create window");
+            throw new RuntimeException();
         }
 
         glfwMakeContextCurrent(window);
@@ -86,7 +97,7 @@ public class ShaderProcessing {
             }
             return new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("Failed to read shader", e);
             return "";
         }
     }
@@ -98,7 +109,8 @@ public class ShaderProcessing {
 
         if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
             String log = glGetShaderInfoLog(shader);
-            throw new RuntimeException("Shader compilation failed: " + log);
+            Logger.error("Shader compilation failed: " + log);
+            throw new RuntimeException();
         }
         return shader;
     }
@@ -107,7 +119,8 @@ public class ShaderProcessing {
         String vertexSource = readShader(shaderPackagePath + "Vertex.vert");
         String fragmentSource = readShader(shaderPackagePath + "Fragment.frag");
         if (vertexSource.isEmpty() || fragmentSource.isEmpty()) {
-            throw new RuntimeException("Failed to load shaders");
+            Logger.error("Failed to load shaders");
+            throw new RuntimeException();
         }
 
         int vertexShader = compileShader(vertexSource, GL_VERTEX_SHADER);
@@ -120,7 +133,8 @@ public class ShaderProcessing {
 
         if (glGetProgrami(shaderProgram, GL_LINK_STATUS) == GL_FALSE) {
             String log = glGetProgramInfoLog(shaderProgram);
-            throw new RuntimeException("Shader linking failed: " + log);
+            Logger.error("Shader linking failed: " + log);
+            throw new RuntimeException();
         }
 
         glDeleteShader(vertexShader);

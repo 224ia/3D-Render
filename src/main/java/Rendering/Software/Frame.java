@@ -34,6 +34,10 @@ public final class Frame extends JPanel {
         return frame;
     }
 
+    public void setTitle(String title) {
+        frame.setTitle(title);
+    }
+
     public void updateImage(BufferedImage image) {
         Graphics2D g2 = gameImage.createGraphics();
         g2.drawImage(image, 0, 0, null);

@@ -21,7 +21,7 @@ public class Main {
 
     // init() - method invoked after Engine is created but before Engine starts
     private void init() {
-        Scene scene = Engine.getScene();
+            Scene scene = Engine.getScene();
         scene.setLight(0, -1, 1);
 
         // Create objects using ObjectBuilder. All parameters have default values so they are optional
@@ -53,7 +53,7 @@ public class Main {
     private void update() {
         fovText.text = "FOV: " + Engine.getFov();
         fpsText.text = "FPS: " + FpsCounter.getFps();
-        Logger.debug(FpsCounter.getFps() + "");
+        Engine.changeWindowTitle("FPS: " + FpsCounter.getFps());
 
         for (Object object : Engine.getScene().getObjects()) {
 //        object.rotate(1f, 0, 1f);
