@@ -114,7 +114,7 @@ public final class Engine {
             try {
                 updateMethod.invoke(mainClassInstance);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                Logger.error("Game update crashed: " + e.getMessage());
             }
         }
     }
